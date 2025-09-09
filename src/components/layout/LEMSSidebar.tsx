@@ -6,6 +6,7 @@ import {
   Users, 
   Settings,
   FileText,
+  Calendar,
   MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,6 +46,13 @@ const navigationItems: NavItem[] = [
     icon: FileText,
     path: '/quizzes',
     roles: ['student', 'instructor']
+  },
+  {
+    id: 'attendance',
+    label: 'الحضور',
+    icon: Calendar,
+    path: '/attendance',
+    roles: ['student', 'instructor', 'admin']
   },
   {
     id: 'students',

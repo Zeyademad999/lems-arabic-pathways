@@ -6,6 +6,7 @@ import {
   Users, 
   Settings,
   FileText,
+  Calendar,
   MessageCircle,
   Plus,
   Eye,
@@ -50,6 +51,12 @@ const navigationItems: NavItem[] = [
     label: 'الاختبارات',
     icon: FileText,
     path: '/instructor/quizzes'
+  },
+  {
+    id: 'attendance',
+    label: 'تتبع الحضور',
+    icon: Calendar,
+    path: '/instructor/attendance'
   },
   {
     id: 'grading',

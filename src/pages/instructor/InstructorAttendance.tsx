@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { InstructorLayout } from '@/components/layout/InstructorLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { toast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Calendar,
   Users,
@@ -25,7 +31,16 @@ import {
   Trash2,
   FileSpreadsheet,
   Bell,
-  ChevronDown
+  ChevronDown,
+  QrCode,
+  BarChart3,
+  TrendingUp,
+  MapPin,
+  Camera,
+  Wifi,
+  RefreshCw,
+  CalendarDays,
+  History
 } from 'lucide-react';
 
 interface AttendanceRecord {
@@ -42,6 +57,8 @@ interface AttendanceRecord {
   notes?: string;
   lastModified?: string;
   modifiedBy?: string;
+  method?: 'manual' | 'qr' | 'auto';
+  location?: string;
 }
 
 interface Student {
@@ -49,6 +66,9 @@ interface Student {
   name: string;
   email: string;
   courses: string[];
+  phone?: string;
+  studentId?: string;
+  enrollmentDate?: string;
 }
 
 interface CourseAttendance {
@@ -60,14 +80,70 @@ interface CourseAttendance {
   lateCount: number;
   excusedCount: number;
   attendanceRate: number;
+  sessions: number;
+  currentSession?: string;
+  qrCode?: string;
+}
+
+interface AttendanceSession {
+  id: string;
+  courseId: string;
+  courseName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  status: 'upcoming' | 'active' | 'completed';
+  qrCode?: string;
+  attendanceCount: number;
 }
 
 const mockStudents: Student[] = [
-  { id: '1', name: 'أحمد محمد علي', email: 'ahmed.mohammed@email.com', courses: ['أساسيات اللوجستيات', 'إكسل للمبتدئين'] },
-  { id: '2', name: 'فاطمة السالم', email: 'fatima.salem@email.com', courses: ['أساسيات اللوجستيات', 'التدريب السلوكي'] },
-  { id: '3', name: 'محمد عبد الله', email: 'mohammed.abdullah@email.com', courses: ['إكسل للمبتدئين', 'التدريب السلوكي'] },
-  { id: '4', name: 'سارة أحمد', email: 'sarah.ahmed@email.com', courses: ['أساسيات اللوجستيات'] },
-  { id: '5', name: 'علي حسن', email: 'ali.hassan@email.com', courses: ['إكسل للمبتدئين'] }
+  { 
+    id: '1', 
+    name: 'أحمد محمد علي', 
+    email: 'ahmed.mohammed@email.com', 
+    courses: ['أساسيات اللوجستيات', 'إكسل للمبتدئين'],
+    phone: '+966501234567',
+    studentId: 'ST001',
+    enrollmentDate: '2024-01-01'
+  },
+  { 
+    id: '2', 
+    name: 'فاطمة السالم', 
+    email: 'fatima.salem@email.com', 
+    courses: ['أساسيات اللوجستيات', 'التدريب السلوكي'],
+    phone: '+966501234568',
+    studentId: 'ST002',
+    enrollmentDate: '2024-01-01'
+  },
+  { 
+    id: '3', 
+    name: 'محمد عبد الله', 
+    email: 'mohammed.abdullah@email.com', 
+    courses: ['إكسل للمبتدئين', 'التدريب السلوكي'],
+    phone: '+966501234569',
+    studentId: 'ST003',
+    enrollmentDate: '2024-01-02'
+  },
+  { 
+    id: '4', 
+    name: 'سارة أحمد', 
+    email: 'sarah.ahmed@email.com', 
+    courses: ['أساسيات اللوجستيات'],
+    phone: '+966501234570',
+    studentId: 'ST004',
+    enrollmentDate: '2024-01-02'
+  },
+  { 
+    id: '5', 
+    name: 'علي حسن', 
+    email: 'ali.hassan@email.com', 
+    courses: ['إكسل للمبتدئين'],
+    phone: '+966501234571',
+    studentId: 'ST005',
+    enrollmentDate: '2024-01-03'
+  }
 ];
 
 const mockAttendanceRecords: AttendanceRecord[] = [
@@ -137,7 +213,10 @@ const mockCourseAttendance: CourseAttendance[] = [
     absentCount: 2,
     lateCount: 2,
     excusedCount: 1,
-    attendanceRate: 88
+    attendanceRate: 88,
+    sessions: 12,
+    currentSession: 'إدارة المخازن المتقدمة',
+    qrCode: 'QR12345'
   },
   {
     courseId: '2',
@@ -147,7 +226,8 @@ const mockCourseAttendance: CourseAttendance[] = [
     absentCount: 1,
     lateCount: 1,
     excusedCount: 1,
-    attendanceRate: 89
+    attendanceRate: 89,
+    sessions: 10
   },
   {
     courseId: '3',
@@ -157,11 +237,13 @@ const mockCourseAttendance: CourseAttendance[] = [
     absentCount: 2,
     lateCount: 1,
     excusedCount: 1,
-    attendanceRate: 91
+    attendanceRate: 91,
+    sessions: 15
   }
 ];
 
 const InstructorAttendance = () => {
+  const { toast } = useToast();
   const [attendanceRecords, setAttendanceRecords] = React.useState<AttendanceRecord[]>(mockAttendanceRecords);
   const [courseAttendance, setCourseAttendance] = React.useState<CourseAttendance[]>(mockCourseAttendance);
   const [searchTerm, setSearchTerm] = React.useState('');

@@ -28,6 +28,11 @@ import InstructorAssignments from "./pages/instructor/InstructorAssignments";
 import InstructorQuizzes from "./pages/instructor/InstructorQuizzes";
 import InstructorAnalytics from "./pages/instructor/InstructorAnalytics";
 import InstructorGrading from "./pages/instructor/InstructorGrading";
+import InstructorAttendance from "./pages/instructor/InstructorAttendance";
+import InstructorBehavior from "./pages/instructor/InstructorBehavior";
+import InstructorProgress from "./pages/instructor/InstructorProgress";
+import InstructorChatbot from "./pages/instructor/InstructorChatbot";
+import InstructorSettings from "./pages/instructor/InstructorSettings";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +68,11 @@ const App = () => (
             <Route path="/instructor/quizzes" element={<InstructorQuizzes />} />
             <Route path="/instructor/analytics" element={<InstructorAnalytics />} />
             <Route path="/instructor/grading" element={<InstructorGrading />} />
+            <Route path="/instructor/attendance" element={<InstructorAttendance />} />
+            <Route path="/instructor/behavior" element={<InstructorBehavior />} />
+            <Route path="/instructor/progress" element={<InstructorProgress />} />
+            <Route path="/instructor/chatbot" element={<InstructorChatbot />} />
+            <Route path="/instructor/settings" element={<InstructorSettings />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

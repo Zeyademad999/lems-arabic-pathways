@@ -1,24 +1,12 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { LEMSLayout } from '@/components/layout/LEMSLayout';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CourseNavigation } from '@/components/course/CourseNavigation';
-import { ProgressTracker } from '@/components/course/ProgressTracker';
 import { 
-  PlayCircle, 
-  FileText, 
-  Clock, 
-  Users, 
-  Target,
-  Award,
-  CheckCircle2,
-  Lock,
   ArrowRight,
-  BookOpen,
-  Star
+  CheckCircle2
 } from 'lucide-react';
 
 interface Lesson {
@@ -250,8 +238,6 @@ const CourseDetail = () => {
   const course = mockCourse;
 
   const currentSection = course.sections.find(s => s.id === selectedSection);
-  const completedLessons = course.sections.flatMap(s => s.lessons).filter(l => l.completed).length;
-  const completedQuizzes = course.sections.filter(s => s.quiz?.completed).length;
 
   const handleStartLesson = (lessonId: string) => {
     // Navigate to lesson view
@@ -280,35 +266,23 @@ const CourseDetail = () => {
         )}
 
         {/* Main Content */}
-        <div className="flex-1 p-6 space-y-6">
+        <div className="flex-1 p-8 max-w-4xl mx-auto">
           {/* Course Header */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="space-y-8">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <Link to="/courses" className="hover:text-primary">الكورسات</Link>
               <ArrowRight className="h-4 w-4" />
               <span>{course.title}</span>
             </div>
 
             <div className="flex items-start justify-between">
-              <div className="space-y-3">
-                <h1 className="text-3xl font-bold text-education-primary">{course.title}</h1>
-                <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
+              <div className="space-y-4">
+                <h1 className="text-4xl font-bold">{course.title}</h1>
+                <p className="text-muted-foreground text-lg max-w-3xl leading-relaxed">
                   {course.description}
                 </p>
-                
-                <div className="flex items-center gap-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-primary" />
-                    <span>{course.instructor}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-primary" />
-                    <span>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-warning fill-warning" />
-                    <span>{course.rating} ({course.studentsCount} طالب)</span>
-                  </div>
+                <div className="text-muted-foreground">
+                  بواسطة {course.instructor}
                 </div>
               </div>
 
@@ -320,201 +294,119 @@ const CourseDetail = () => {
                 {showSidebar ? 'إخفاء القائمة' : 'إظهار القائمة'}
               </Button>
             </div>
-          </div>
 
-          {/* Progress Overview */}
-          <Card className="lems-card">
-            <ProgressTracker 
-              overallProgress={course.overallProgress}
-              completedLessons={completedLessons}
-              totalLessons={course.totalLessons}
-              completedQuizzes={completedQuizzes}
-              totalQuizzes={course.totalQuizzes}
-            />
-          </Card>
+            {/* Simple Progress */}
+            <div className="bg-muted/30 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="font-medium">تقدمك في الكورس</span>
+                <span className="text-2xl font-bold">{course.overallProgress}%</span>
+              </div>
+              <Progress value={course.overallProgress} className="h-2" />
+            </div>
+          </div>
 
           {/* Current Section Content */}
           {currentSection && (
-            <div className="space-y-6">
-              <Card className="lems-card">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-2xl font-bold text-education-primary">
-                        {currentSection.title}
-                      </h2>
-                      <p className="text-muted-foreground mt-2">
-                        {currentSection.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {currentSection.completed ? (
-                        <Badge className="lems-badge-success">مكتمل</Badge>
-                      ) : currentSection.unlocked ? (
-                        <Badge className="lems-badge-pending">قيد التقدم</Badge>
-                      ) : (
-                        <Badge className="lems-badge-locked">مقفل</Badge>
-                      )}
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">
-                          {currentSection.progress}%
-                        </div>
-                        <div className="text-xs text-muted-foreground">التقدم</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Progress value={currentSection.progress} className="h-3" />
-                </div>
-              </Card>
+            <div className="space-y-12 mt-12">
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold">
+                  {currentSection.title}
+                </h2>
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  {currentSection.description}
+                </p>
+              </div>
 
               {/* Section Lessons */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold flex items-center gap-2">
-                  <BookOpen className="h-5 w-5" />
-                  الدروس ({currentSection.lessons.length})
+              <div className="space-y-6">
+                <h3 className="text-xl font-medium">
+                  الدروس
                 </h3>
 
-                <div className="grid gap-4">
+                <div className="space-y-4">
                   {currentSection.lessons.map((lesson, index) => (
-                    <Card key={lesson.id} className="lems-card hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
-                            {lesson.completed ? (
-                              <CheckCircle2 className="h-5 w-5 text-success" />
-                            ) : currentSection.unlocked ? (
-                              <PlayCircle className="h-5 w-5 text-primary" />
-                            ) : (
-                              <Lock className="h-5 w-5 text-muted-foreground" />
-                            )}
-                          </div>
-                          
-                          <div className="space-y-1">
-                            <h4 className="font-semibold">
-                              {index + 1}. {lesson.title}
-                            </h4>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <PlayCircle className="h-3 w-3" />
-                                <span>{lesson.duration} دقيقة</span>
-                              </div>
-                              {lesson.attachments.length > 0 && (
-                                <div className="flex items-center gap-1">
-                                  <FileText className="h-3 w-3" />
-                                  <span>{lesson.attachments.length} مرفق</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {lesson.completed && (
-                            <Badge variant="outline" className="text-success">
-                              مكتمل
-                            </Badge>
+                    <div key={lesson.id} className="flex items-center justify-between p-6 bg-background border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-medium">
+                          {lesson.completed ? (
+                            <CheckCircle2 className="h-5 w-5 text-success" />
+                          ) : (
+                            <span>{index + 1}</span>
                           )}
-                          
-                          <Button
-                            size="sm"
-                            variant={lesson.completed ? "outline" : "default"}
-                            onClick={() => handleStartLesson(lesson.id)}
-                            disabled={!currentSection.unlocked}
-                            className="lems-button-primary"
-                          >
-                            {lesson.completed ? 'مراجعة' : 'بدء الدرس'}
-                          </Button>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium text-lg mb-2">
+                            {lesson.title}
+                          </h4>
+                          <div className="text-sm text-muted-foreground">
+                            {lesson.duration} دقيقة
+                          </div>
                         </div>
                       </div>
-                    </Card>
+
+                      <Button
+                        size="lg"
+                        variant={lesson.completed ? "outline" : "default"}
+                        onClick={() => handleStartLesson(lesson.id)}
+                        disabled={!currentSection.unlocked}
+                      >
+                        {lesson.completed ? 'مراجعة' : 'بدء الدرس'}
+                      </Button>
+                    </div>
                   ))}
                 </div>
               </div>
 
               {/* Section Quiz */}
               {currentSection.quiz && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold flex items-center gap-2">
-                    <Award className="h-5 w-5" />
+                <div className="space-y-6">
+                  <h3 className="text-xl font-medium">
                     اختبار القسم
                   </h3>
 
-                  <Card className={`lems-card ${
-                    currentSection.quiz.passed ? 'border-success bg-success/5' : 
-                    !currentSection.unlocked ? 'border-muted bg-muted/20' : ''
-                  }`}>
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <h4 className="font-semibold text-lg">
-                            {currentSection.quiz.title}
-                          </h4>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-muted-foreground" />
-                              <span>{currentSection.quiz.questions} سؤال</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-muted-foreground" />
-                              <span>{currentSection.quiz.duration} دقيقة</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Target className="h-4 w-4 text-muted-foreground" />
-                              <span>الحد الأدنى: {currentSection.quiz.minimumScore}%</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Award className="h-4 w-4 text-muted-foreground" />
-                              <span>{currentSection.quiz.attempts}/{currentSection.quiz.maxAttempts} محاولات</span>
-                            </div>
+                  <div className="p-8 bg-background border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-xl">
+                          {currentSection.quiz.title}
+                        </h4>
+                        <div className="text-muted-foreground space-y-1">
+                          <div>{currentSection.quiz.questions} سؤال • {currentSection.quiz.duration} دقيقة</div>
+                          <div>الحد الأدنى للنجاح: {currentSection.quiz.minimumScore}%</div>
+                        </div>
+                        
+                        {currentSection.quiz.bestScore && (
+                          <div className="pt-2">
+                            <span className="text-sm text-muted-foreground ml-2">أفضل نتيجة:</span>
+                            <span className={`text-lg font-bold ${
+                              currentSection.quiz.bestScore >= currentSection.quiz.minimumScore 
+                                ? 'text-success' 
+                                : 'text-destructive'
+                            }`}>
+                              {currentSection.quiz.bestScore}%
+                            </span>
                           </div>
-                          
-                          {currentSection.quiz.bestScore && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="text-muted-foreground">أفضل درجة:</span>
-                              <span className={`font-semibold ${
-                                currentSection.quiz.passed ? 'text-success' : 'text-warning'
-                              }`}>
-                                {currentSection.quiz.bestScore}%
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-center space-y-2">
-                          {currentSection.quiz.passed ? (
-                            <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center">
-                              <CheckCircle2 className="h-8 w-8 text-success" />
-                            </div>
-                          ) : !currentSection.unlocked ? (
-                            <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center">
-                              <Lock className="h-8 w-8 text-muted-foreground" />
-                            </div>
-                          ) : (
-                            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                              <Award className="h-8 w-8 text-primary" />
-                            </div>
-                          )}
-                          
-                          <Button
-                            onClick={() => handleStartQuiz(currentSection.quiz!.id)}
-                            disabled={!currentSection.unlocked || currentSection.quiz.attempts >= currentSection.quiz.maxAttempts}
-                            className="lems-button-primary"
-                          >
-                            {currentSection.quiz.completed ? 'إعادة المحاولة' : 'بدء الاختبار'}
-                          </Button>
-                        </div>
+                        )}
                       </div>
 
-                      {!currentSection.quiz.passed && currentSection.quiz.completed && (
-                        <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
-                          <p className="text-sm text-warning">
-                            <strong>تنبيه:</strong> يجب الحصول على {currentSection.quiz.minimumScore}% على الأقل لفتح القسم التالي
-                          </p>
-                        </div>
-                      )}
+                      <Button
+                        size="lg"
+                        onClick={() => handleStartQuiz(currentSection.quiz!.id)}
+                        disabled={!currentSection.unlocked || currentSection.quiz.attempts >= currentSection.quiz.maxAttempts}
+                      >
+                        {currentSection.quiz.attempts > 0 ? 'إعادة المحاولة' : 'بدء الاختبار'}
+                      </Button>
                     </div>
-                  </Card>
+
+                    {!currentSection.quiz.passed && currentSection.quiz.attempts > 0 && (
+                      <div className="mt-6 p-4 bg-warning/10 rounded-md border-l-4 border-l-warning">
+                        <p className="text-sm">
+                          يجب الحصول على {currentSection.quiz.minimumScore}% على الأقل للانتقال إلى القسم التالي.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

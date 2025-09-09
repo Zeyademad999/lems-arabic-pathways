@@ -10,7 +10,10 @@ import NotFound from "./pages/NotFound";
 import Courses from "./pages/student/Courses";
 import CourseDetail from "./pages/student/CourseDetail";
 import LessonView from "./pages/student/LessonView";
+// Student quiz routes
+import QuizPreview from "./pages/student/QuizPreview";
 import QuizTaking from "./pages/student/QuizTaking";
+import QuizResults from "./pages/student/QuizResults";
 import Assignments from "./pages/student/Assignments";
 import Quizzes from "./pages/student/Quizzes";
 import Progress from "./pages/student/Progress";
@@ -50,11 +53,14 @@ const App = () => (
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/courses/:courseId/lessons/:lessonId" element={<LessonView />} />
-            <Route path="/courses/:courseId/quizzes/:quizId" element={<QuizTaking />} />
-            <Route path="/assignments" element={<Assignments />} />
             <Route path="/quizzes" element={<Quizzes />} />
-            <Route path="/progress" element={<Progress />} />
-            <Route path="/behavior" element={<Behavior />} />
+            
+            {/* Quiz routes */}
+            <Route path="/quiz/:quizId/preview" element={<QuizPreview />} />
+            <Route path="/quiz/:quizId/take" element={<QuizTaking />} />
+            <Route path="/quiz/:quizId/retake" element={<QuizTaking />} />
+            <Route path="/quiz/:quizId/results" element={<QuizResults />} />
+            
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/settings" element={<Settings />} />
@@ -69,8 +75,6 @@ const App = () => (
             <Route path="/instructor/analytics" element={<InstructorAnalytics />} />
             <Route path="/instructor/grading" element={<InstructorGrading />} />
             <Route path="/instructor/attendance" element={<InstructorAttendance />} />
-            <Route path="/instructor/behavior" element={<InstructorBehavior />} />
-            <Route path="/instructor/progress" element={<InstructorProgress />} />
             <Route path="/instructor/chatbot" element={<InstructorChatbot />} />
             <Route path="/instructor/settings" element={<InstructorSettings />} />
             

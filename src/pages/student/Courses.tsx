@@ -395,23 +395,33 @@ const Courses = () => {
                     </div>
                   </div>
                   
-                  <Button
-                    variant="outline"
-                    onClick={() => setExpandedCourse(expandedCourse === course.id ? null : course.id)}
-                    className="flex items-center gap-2"
-                  >
-                    {expandedCourse === course.id ? (
-                      <>
-                        <ChevronDown className="h-4 w-4" />
-                        إخفاء التفاصيل
-                      </>
-                    ) : (
-                      <>
-                        <ChevronRight className="h-4 w-4" />
-                        عرض المحتوى
-                      </>
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      className="lems-button-primary"
+                      onClick={() => window.location.href = `/courses/${course.id}`}
+                    >
+                      <Eye className="h-4 w-4 ml-2" />
+                      دخول الكورس
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={() => setExpandedCourse(expandedCourse === course.id ? null : course.id)}
+                      className="flex items-center gap-2"
+                    >
+                      {expandedCourse === course.id ? (
+                        <>
+                          <ChevronDown className="h-4 w-4" />
+                          إخفاء التفاصيل
+                        </>
+                      ) : (
+                        <>
+                          <ChevronRight className="h-4 w-4" />
+                          عرض التفاصيل
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Expanded Course Content */}

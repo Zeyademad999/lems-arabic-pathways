@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { InstructorLayout } from '@/components/layout/InstructorLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import { 
   UserCheck,
   FileText,
@@ -13,7 +19,9 @@ import {
   Search,
   Filter,
   Download,
-  Edit
+  Edit,
+  Eye,
+  Star
 } from 'lucide-react';
 
 interface GradingItem {
@@ -67,6 +75,35 @@ const mockGradingItems: GradingItem[] = [
 ];
 
 const InstructorGrading = () => {
+  const { toast } = useToast();
+  const [gradingItems, setGradingItems] = useState<GradingItem[]>(mockGradingItems);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedItem, setSelectedItem] = useState<GradingItem | null>(null);
+  const [isGradingModalOpen, setIsGradingModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [gradingScore, setGradingScore] = useState('');
+  const [gradingFeedback, setGradingFeedback] = useState('');
+
+  // Filter grading items
+  const filteredItems = useMemo(() => {
+    return gradingItems.filter(item => {
+      const matchesSearch = item.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           item.assignment.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           item.course.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCourse = selectedCourse === 'all' || item.course === selectedCourse;
+      const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus;
+      
+      return matchesSearch && matchesCourse && matchesStatus;
+    });
+  }, [gradingItems, searchQuery, selectedCourse, selectedStatus]);
+
+  // Get unique courses
+  const courses = useMemo(() => {
+    return [...new Set(gradingItems.map(item => item.course))];
+  }, [gradingItems]);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -114,9 +151,62 @@ const InstructorGrading = () => {
     return 'text-red-500';
   };
 
-  const pendingCount = mockGradingItems.filter(item => item.status === 'pending').length;
-  const gradedCount = mockGradingItems.filter(item => item.status === 'graded').length;
-  const lateCount = mockGradingItems.filter(item => item.status === 'late').length;
+  // Handle grading
+  const handleGradeSubmission = () => {
+    if (!selectedItem || !gradingScore) return;
+
+    const score = parseFloat(gradingScore);
+    if (isNaN(score) || score < 0 || score > selectedItem.maxScore) {
+      toast({
+        title: "خطأ في الدرجة",
+        description: `يجب أن تكون الدرجة بين 0 و ${selectedItem.maxScore}`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setGradingItems(prev => prev.map(item =>
+      item.id === selectedItem.id
+        ? { ...item, score, status: 'graded' as const }
+        : item
+    ));
+
+    toast({
+      title: "تم التصحيح بنجاح",
+      description: `تم تصحيح ${selectedItem.assignment} للطالب ${selectedItem.studentName}`
+    });
+
+    setIsGradingModalOpen(false);
+    setGradingScore('');
+    setGradingFeedback('');
+    setSelectedItem(null);
+  };
+
+  // Export grades
+  const handleExportGrades = () => {
+    toast({
+      title: "تم تصدير الدرجات",
+      description: "تم تصدير جميع الدرجات بصيغة Excel"
+    });
+  };
+
+  // Quick grading functions
+  const handleQuickGrading = (type: string) => {
+    toast({
+      title: "التصحيح السريع",
+      description: `تم تفعيل وضع ${type}`
+    });
+  };
+
+  const pendingCount = filteredItems.filter(item => item.status === 'pending').length;
+  const gradedCount = filteredItems.filter(item => item.status === 'graded').length;
+  const lateCount = filteredItems.filter(item => item.status === 'late').length;
+  const averageScore = useMemo(() => {
+    const gradedItems = gradingItems.filter(item => item.score !== undefined);
+    if (gradedItems.length === 0) return 0;
+    const total = gradedItems.reduce((sum, item) => sum + (item.score! / item.maxScore) * 100, 0);
+    return Math.round(total / gradedItems.length);
+  }, [gradingItems]);
 
   return (
     <InstructorLayout>
@@ -128,11 +218,11 @@ const InstructorGrading = () => {
             <p className="text-muted-foreground">تصحيح الواجبات والاختبارات وإدارة الدرجات</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleExportGrades}>
               <Download className="h-4 w-4 ml-2" />
               تصدير الدرجات
             </Button>
-            <Button>
+            <Button onClick={() => handleQuickGrading('التصحيح السريع')}>
               <UserCheck className="h-4 w-4 ml-2" />
               تصحيح سريع
             </Button>
@@ -171,11 +261,11 @@ const InstructorGrading = () => {
             </div>
           </Card>
           
-          <Card className="p-4">
+           <Card className="p-4">
             <div className="flex items-center gap-3">
               <UserCheck className="h-8 w-8 text-blue-600" />
               <div>
-                <p className="text-2xl font-bold">87%</p>
+                <p className="text-2xl font-bold">{averageScore}%</p>
                 <p className="text-sm text-muted-foreground">متوسط الدرجات</p>
               </div>
             </div>
@@ -187,28 +277,38 @@ const InstructorGrading = () => {
           <div className="flex gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <input
+              <Input
                 type="text"
                 placeholder="البحث في المهام..."
-                className="w-full pl-4 pr-10 py-2 border rounded-md"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-4 pr-10"
               />
             </div>
-            <select className="px-4 py-2 border rounded-md">
-              <option>جميع الكورسات</option>
-              <option>أساسيات اللوجستيات</option>
-              <option>إكسل للمبتدئين</option>
-              <option>التدريب السلوكي</option>
-            </select>
-            <select className="px-4 py-2 border rounded-md">
-              <option>جميع الحالات</option>
-              <option>في الانتظار</option>
-              <option>مصحح</option>
-              <option>متأخر</option>
-            </select>
-            <Button variant="outline">
-              <Filter className="h-4 w-4 ml-2" />
-              فلترة
-            </Button>
+            
+            <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="اختر الكورس" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">جميع الكورسات</SelectItem>
+                {courses.map(course => (
+                  <SelectItem key={course} value={course}>{course}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="اختر الحالة" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">جميع الحالات</SelectItem>
+                <SelectItem value="pending">في الانتظار</SelectItem>
+                <SelectItem value="graded">مصحح</SelectItem>
+                <SelectItem value="late">متأخر</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </Card>
 
@@ -216,7 +316,7 @@ const InstructorGrading = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">قائمة التصحيح</h3>
           
-          {mockGradingItems.map((item) => (
+          {filteredItems.map((item) => (
             <Card key={item.id} className="p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -258,16 +358,37 @@ const InstructorGrading = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <FileText className="h-4 w-4" />
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setSelectedItem(item);
+                        setIsViewModalOpen(true);
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
                     </Button>
                     {item.status === 'pending' ? (
-                      <Button size="sm">
+                      <Button 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setIsGradingModalOpen(true);
+                        }}
+                      >
                         <Edit className="h-4 w-4 ml-1" />
                         تصحيح
                       </Button>
                     ) : (
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setGradingScore(item.score?.toString() || '');
+                          setIsGradingModalOpen(true);
+                        }}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                     )}
@@ -282,22 +403,165 @@ const InstructorGrading = () => {
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4">التصحيح السريع</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+            <div 
+              className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+              onClick={() => handleQuickGrading('تصحيح بالدرجات')}
+            >
               <h4 className="font-medium mb-2">تصحيح بالدرجات</h4>
               <p className="text-sm text-muted-foreground">إدخال الدرجات مباشرة للمهام المتعددة</p>
             </div>
             
-            <div className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+            <div 
+              className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+              onClick={() => handleQuickGrading('تصحيح بالنموذج')}
+            >
               <h4 className="font-medium mb-2">تصحيح بالنموذج</h4>
               <p className="text-sm text-muted-foreground">استخدام نموذج تصحيح موحد</p>
             </div>
             
-            <div className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors">
+            <div 
+              className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+              onClick={() => handleQuickGrading('مراجعة جماعية')}
+            >
               <h4 className="font-medium mb-2">مراجعة جماعية</h4>
               <p className="text-sm text-muted-foreground">مراجعة وتعديل درجات متعددة</p>
             </div>
           </div>
         </Card>
+
+        {/* Grading Modal */}
+        <Dialog open={isGradingModalOpen} onOpenChange={setIsGradingModalOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>تصحيح المهمة</DialogTitle>
+            </DialogHeader>
+            
+            {selectedItem && (
+              <div className="space-y-4">
+                <div>
+                  <Label className="font-medium">الطالب:</Label>
+                  <p className="text-sm">{selectedItem.studentName}</p>
+                </div>
+                
+                <div>
+                  <Label className="font-medium">المهمة:</Label>
+                  <p className="text-sm">{selectedItem.assignment}</p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="score">الدرجة (من {selectedItem.maxScore})</Label>
+                  <Input
+                    id="score"
+                    type="number"
+                    value={gradingScore}
+                    onChange={(e) => setGradingScore(e.target.value)}
+                    min="0"
+                    max={selectedItem.maxScore}
+                    placeholder="أدخل الدرجة"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="feedback">التعليقات (اختياري)</Label>
+                  <Textarea
+                    id="feedback"
+                    value={gradingFeedback}
+                    onChange={(e) => setGradingFeedback(e.target.value)}
+                    placeholder="أضف تعليقاتك هنا..."
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={() => setIsGradingModalOpen(false)}>
+                    إلغاء
+                  </Button>
+                  <Button onClick={handleGradeSubmission}>
+                    حفظ الدرجة
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* View Modal */}
+        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>تفاصيل المهمة</DialogTitle>
+            </DialogHeader>
+            
+            {selectedItem && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="font-medium">الطالب:</Label>
+                    <p className="text-sm">{selectedItem.studentName}</p>
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">الكورس:</Label>
+                    <p className="text-sm">{selectedItem.course}</p>
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">المهمة:</Label>
+                    <p className="text-sm">{selectedItem.assignment}</p>
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">النوع:</Label>
+                    {getTypeBadge(selectedItem.type)}
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">تاريخ التسليم:</Label>
+                    <p className="text-sm">{selectedItem.submittedAt}</p>
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">الحالة:</Label>
+                    {getStatusBadge(selectedItem.status)}
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">الدرجة:</Label>
+                    {selectedItem.score !== undefined ? (
+                      <p className={`font-semibold ${getScoreColor(selectedItem.score, selectedItem.maxScore)}`}>
+                        {selectedItem.score}/{selectedItem.maxScore}
+                      </p>
+                    ) : (
+                      <p className="text-muted-foreground">لم يتم التصحيح</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <Label className="font-medium">الأولوية:</Label>
+                    <div className="flex items-center gap-1">
+                      {getPriorityIcon(selectedItem.priority)}
+                      <span className="text-sm capitalize">{selectedItem.priority}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 justify-end">
+                  <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
+                    إغلاق
+                  </Button>
+                  {selectedItem.status === 'pending' && (
+                    <Button onClick={() => {
+                      setIsViewModalOpen(false);
+                      setIsGradingModalOpen(true);
+                    }}>
+                      تصحيح الآن
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </InstructorLayout>
   );

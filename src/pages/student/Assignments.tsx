@@ -12,7 +12,8 @@ import {
   AlertCircle,
   Calendar,
   Download,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
 
 interface Assignment {
@@ -34,48 +35,81 @@ const mockAssignments: Assignment[] = [
     id: '1',
     title: 'تقرير عن أنظمة إدارة المخازن',
     course: 'أساسيات اللوجستيات',
-    description: 'اكتب تقريراً مفصلاً عن أنظمة إدارة المخازن الحديثة وفوائدها في تحسين كفاءة العمليات اللوجستية',
+    description: 'اكتب تقريراً مفصلاً عن أنظمة إدارة المخازن الحديثة وفوائدها في تحسين كفاءة العمليات اللوجستية. يجب أن يتضمن التقرير تحليل للتقنيات الحديثة مثل WMS وأنظمة الباركود والـ RFID.',
     dueDate: '2024-01-20',
     status: 'pending',
     maxGrade: 100,
-    attachments: ['requirements.pdf', 'template.docx'],
+    attachments: ['requirements.pdf', 'template.docx', 'examples.pdf'],
     submissionType: 'file'
   },
   {
     id: '2',
     title: 'دراسة حالة: تحليل سلسلة التوريد',
     course: 'أساسيات اللوجستيات',
-    description: 'حلل سلسلة التوريد لشركة محلية واقترح تحسينات',
+    description: 'اختر شركة محلية أو عالمية وحلل سلسلة التوريد الخاصة بها. ادرس نقاط القوة والضعف واقترح تحسينات عملية يمكن تطبيقها.',
     dueDate: '2024-01-15',
     submittedDate: '2024-01-14',
     status: 'graded',
     grade: 85,
     maxGrade: 100,
-    attachments: ['case_study.pdf'],
+    attachments: ['case_study_guidelines.pdf', 'analysis_template.docx'],
     submissionType: 'file'
   },
   {
     id: '3',
     title: 'تقييم السلوك المهني الذاتي',
     course: 'التدريب السلوكي المهني',
-    description: 'قم بتقييم سلوكك المهني وحدد نقاط القوة والضعف',
+    description: 'أكمل نموذج التقييم الذاتي للسلوك المهني. حدد نقاط القوة التي تمتلكها والمجالات التي تحتاج للتحسين. ضع خطة عمل للتطوير.',
     dueDate: '2024-01-25',
     status: 'pending',
     maxGrade: 50,
-    attachments: ['assessment_form.pdf'],
+    attachments: ['self_assessment_form.pdf', 'behavioral_guidelines.pdf'],
     submissionType: 'both'
   },
   {
     id: '4',
-    title: 'مشروع الإكسل العملي',
+    title: 'مشروع الإكسل العملي - إدارة المخزون',
     course: 'إكسل للمبتدئين',
-    description: 'إنشاء جدول بيانات لإدارة المخزون باستخدام الدوال المتقدمة',
+    description: 'إنشاء نظام إدارة مخزون متكامل باستخدام الإكسل. يجب أن يتضمن: جداول البيانات، المعادلات، الرسوم البيانية، وتقارير المخزون.',
     dueDate: '2024-01-10',
     submittedDate: '2024-01-08',
     status: 'submitted',
     maxGrade: 75,
-    attachments: ['excel_template.xlsx'],
+    attachments: ['excel_project_requirements.pdf', 'sample_data.xlsx', 'formulas_guide.pdf'],
     submissionType: 'file'
+  },
+  {
+    id: '5',
+    title: 'ورشة عمل: تطبيق مبادئ الـ 5S',
+    course: 'أساسيات اللوجستيات',
+    description: 'صور مكان عملك أو منزلك قبل وبعد تطبيق مبادئ الـ 5S. اكتب تقريراً عن التحسينات التي لاحظتها.',
+    dueDate: '2024-01-30',
+    status: 'pending',
+    maxGrade: 60,
+    attachments: ['5s_methodology.pdf', 'photo_guidelines.pdf'],
+    submissionType: 'both'
+  },
+  {
+    id: '6',
+    title: 'مقابلة مع متخصص لوجستيات',
+    course: 'أساسيات اللوجستيات',
+    description: 'أجري مقابلة مع متخصص في مجال اللوجستيات واكتب تقريراً عن خبراته ونصائحه للمبتدئين في المجال.',
+    dueDate: '2024-02-05',
+    status: 'pending',
+    maxGrade: 80,
+    attachments: ['interview_questions.pdf', 'report_template.docx'],
+    submissionType: 'file'
+  },
+  {
+    id: '7',
+    title: 'خطة تطوير المهارات الشخصية',
+    course: 'التدريب السلوكي المهني',
+    description: 'ضع خطة شخصية لتطوير مهاراتك المهنية خلال الستة أشهر القادمة. حدد الأهداف والوسائل وطرق القياس.',
+    dueDate: '2024-01-28',
+    status: 'pending',
+    maxGrade: 40,
+    attachments: ['development_plan_template.pdf'],
+    submissionType: 'both'
   }
 ];
 
@@ -259,23 +293,64 @@ const Assignments = () => {
 
                   <div className="flex items-center gap-2">
                     {assignment.attachments.length > 0 && (
-                      <Button size="sm" variant="outline">
-                        <Download className="h-4 w-4 ml-1" />
-                        تحميل المرفقات
-                      </Button>
+                      <div className="flex flex-col gap-1">
+                        <Button size="sm" variant="outline">
+                          <Download className="h-4 w-4 ml-1" />
+                          تحميل المرفقات ({assignment.attachments.length})
+                        </Button>
+                        <div className="text-xs text-muted-foreground">
+                          {assignment.attachments.slice(0, 2).map((file, index) => (
+                            <div key={index}>• {file}</div>
+                          ))}
+                          {assignment.attachments.length > 2 && (
+                            <div>• وملفات أخرى...</div>
+                          )}
+                        </div>
+                      </div>
                     )}
                     
                     {assignment.status === 'pending' && (
-                      <Button size="sm" className="lems-button-primary">
-                        <Upload className="h-4 w-4 ml-1" />
-                        إرسال الحل
-                      </Button>
+                      <div className="flex flex-col gap-2">
+                        <Button size="sm" className="lems-button-primary">
+                          <Upload className="h-4 w-4 ml-1" />
+                          إرسال الحل
+                        </Button>
+                        {assignment.submissionType === 'both' && (
+                          <div className="text-xs text-muted-foreground text-center">
+                            ملف + نص
+                          </div>
+                        )}
+                        {assignment.submissionType === 'file' && (
+                          <div className="text-xs text-muted-foreground text-center">
+                            ملف فقط
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {assignment.status === 'submitted' && (
+                      <div className="flex flex-col gap-2">
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-4 w-4 ml-1" />
+                          عرض المرسل
+                        </Button>
+                        <div className="text-xs text-warning text-center">
+                          في انتظار التقييم
+                        </div>
+                      </div>
                     )}
                     
                     {assignment.status === 'graded' && (
-                      <Button size="sm" variant="outline">
-                        عرض التفاصيل
-                      </Button>
+                      <div className="flex flex-col gap-2">
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-4 w-4 ml-1" />
+                          عرض التقييم
+                        </Button>
+                        <Button size="sm" variant="outline">
+                          <Download className="h-4 w-4 ml-1" />
+                          تحميل التغذية الراجعة
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
   BookOpen, 
@@ -112,7 +113,7 @@ export const LEMSSidebar: React.FC<LEMSSidebarProps> = ({
   userRole, 
   isOpen 
 }) => {
-  const [activeItem, setActiveItem] = React.useState('dashboard');
+  const location = useLocation();
   
   const filteredItems = navigationItems.filter(item => 
     item.roles.includes(userRole)
@@ -129,7 +130,7 @@ export const LEMSSidebar: React.FC<LEMSSidebarProps> = ({
       <nav className="p-4 space-y-2">
         {filteredItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeItem === item.id;
+          const isActive = location.pathname === item.path;
           
           return (
             <Button
@@ -141,17 +142,16 @@ export const LEMSSidebar: React.FC<LEMSSidebarProps> = ({
                 ${!isOpen ? 'justify-center px-2' : ''}
                 transition-all duration-200
               `}
-              onClick={() => {
-                setActiveItem(item.id);
-                window.location.href = item.path;
-              }}
+              asChild
             >
-              <Icon className="h-5 w-5 shrink-0" />
-              {isOpen && (
-                <span className="text-sm font-medium truncate">
-                  {item.label}
-                </span>
-              )}
+              <Link to={item.path}>
+                <Icon className="h-5 w-5 shrink-0" />
+                {isOpen && (
+                  <span className="text-sm font-medium truncate">
+                    {item.label}
+                  </span>
+                )}
+              </Link>
             </Button>
           );
         })}

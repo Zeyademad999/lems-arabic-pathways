@@ -141,7 +141,10 @@ export const LEMSSidebar: React.FC<LEMSSidebarProps> = ({
                 ${!isOpen ? 'justify-center px-2' : ''}
                 transition-all duration-200
               `}
-              onClick={() => setActiveItem(item.id)}
+              onClick={() => {
+                setActiveItem(item.id);
+                window.location.href = item.path;
+              }}
             >
               <Icon className="h-5 w-5 shrink-0" />
               {isOpen && (

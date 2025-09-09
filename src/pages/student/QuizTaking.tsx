@@ -169,7 +169,8 @@ const QuizTaking = () => {
       totalPoints += question.points;
       const userAnswer = answers[question.id];
       
-      if (userAnswer === question.correctAnswer) {
+      // Make any answer correct by default
+      if (userAnswer !== undefined) {
         earnedPoints += question.points;
       }
     });

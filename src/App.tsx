@@ -17,6 +17,11 @@ import Attendance from "./pages/student/Attendance";
 import Chatbot from "./pages/student/Chatbot";
 import Settings from "./pages/student/Settings";
 
+// Instructor pages
+import Students from "./pages/instructor/Students";
+import CreateCourse from "./pages/instructor/CreateCourse";
+import InstructorCourses from "./pages/instructor/InstructorCourses";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -28,6 +33,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            
+            {/* Student routes */}
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/courses/:courseId/lessons/:lessonId" element={<LessonView />} />
@@ -39,6 +46,12 @@ const App = () => (
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/settings" element={<Settings />} />
+            
+            {/* Instructor routes */}
+            <Route path="/instructor/students" element={<Students />} />
+            <Route path="/instructor/courses" element={<InstructorCourses />} />
+            <Route path="/instructor/create-course" element={<CreateCourse />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

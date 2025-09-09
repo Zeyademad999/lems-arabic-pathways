@@ -83,14 +83,14 @@ const navigationItems: NavItem[] = [
     id: 'students',
     label: 'الطلاب',
     icon: Users,
-    path: '/students',
+    path: '/instructor/students',
     roles: ['instructor', 'admin']
   },
   {
     id: 'create-course',
     label: 'إنشاء كورس',
     icon: GraduationCap,
-    path: '/create-course',
+    path: '/instructor/create-course',
     roles: ['instructor', 'admin']
   },
   {

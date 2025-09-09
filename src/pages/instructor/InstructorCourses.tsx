@@ -1298,9 +1298,9 @@ const InstructorCourses = () => {
                           <SelectValue placeholder="اختر الإجابة الصحيحة" />
                         </SelectTrigger>
                         <SelectContent>
-                          {currentQuestion.options?.map((option, index) => (
+                          {currentQuestion.options?.filter(option => option.trim() !== '').map((option, index) => (
                             <SelectItem key={index} value={option}>
-                              {option || `الخيار ${index + 1}`}
+                              {option}
                             </SelectItem>
                           ))}
                         </SelectContent>

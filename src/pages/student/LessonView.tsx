@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,6 +66,7 @@ const mockLesson: Lesson = {
 
 const LessonView = () => {
   const { courseId, lessonId } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [lessonCompleted, setLessonCompleted] = React.useState(false);
   const [showTranscript, setShowTranscript] = React.useState(false);
@@ -298,7 +299,7 @@ const LessonView = () => {
                   <Button 
                     variant="outline" 
                     className="w-full"
-                    onClick={() => window.location.href = `/courses/${courseId}`}
+                    onClick={() => navigate(`/courses/${courseId}`)}
                   >
                     العودة للكورس
                   </Button>

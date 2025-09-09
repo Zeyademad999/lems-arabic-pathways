@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -270,6 +271,7 @@ const mockCourses: Course[] = [
 ];
 
 const Courses = () => {
+  const navigate = useNavigate();
   const [expandedCourse, setExpandedCourse] = React.useState<string | null>(null);
   const [expandedSection, setExpandedSection] = React.useState<string | null>(null);
 
@@ -398,7 +400,7 @@ const Courses = () => {
                   <div className="flex items-center gap-2">
                     <Button
                       className="lems-button-primary"
-                      onClick={() => window.location.href = `/courses/${course.id}`}
+                      onClick={() => navigate(`/courses/${course.id}`)}
                     >
                       <Eye className="h-4 w-4 ml-2" />
                       دخول الكورس

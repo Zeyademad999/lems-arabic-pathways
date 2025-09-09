@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -112,6 +113,7 @@ const mockQuizzes: Quiz[] = [
 ];
 
 const Quizzes = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedStatus, setSelectedStatus] = React.useState('all');
 
@@ -378,14 +380,14 @@ const Quizzes = () => {
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => window.location.href = `/quiz/${quiz.id}/preview`}
+                          onClick={() => navigate(`/quiz/${quiz.id}/preview`)}
                         >
                           معاينة
                         </Button>
                         <Button 
                           size="sm" 
                           className="lems-button-primary"
-                          onClick={() => window.location.href = `/quiz/${quiz.id}/take`}
+                          onClick={() => navigate(`/quiz/${quiz.id}/take`)}
                         >
                           <Play className="h-4 w-4 ml-1" />
                           بدء الاختبار
@@ -397,7 +399,7 @@ const Quizzes = () => {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => window.location.href = `/quiz/${quiz.id}/retake`}
+                        onClick={() => navigate(`/quiz/${quiz.id}/retake`)}
                       >
                         <RotateCcw className="h-4 w-4 ml-1" />
                         إعادة المحاولة
@@ -408,7 +410,7 @@ const Quizzes = () => {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => window.location.href = `/quiz/${quiz.id}/results`}
+                        onClick={() => navigate(`/quiz/${quiz.id}/results`)}
                       >
                         <Target className="h-4 w-4 ml-1" />
                         عرض النتائج

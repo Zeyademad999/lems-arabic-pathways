@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LEMSLayout } from "@/components/layout/LEMSLayout";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { StudentDashboard } from "@/components/dashboard/StudentDashboard";
 import { InstructorDashboard } from "@/components/dashboard/InstructorDashboard";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [user, setUser] = React.useState<{
     role: 'student' | 'instructor' | 'admin';
     isAuthenticated: boolean;
@@ -18,7 +20,7 @@ const Index = () => {
     
     // Redirect instructor to instructor portal
     if (userRole === 'instructor') {
-      window.location.href = '/instructor';
+      navigate('/instructor');
     }
   };
 

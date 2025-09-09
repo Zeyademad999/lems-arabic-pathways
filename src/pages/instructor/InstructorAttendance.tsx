@@ -8,9 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { useToast } from '@/hooks/use-toast';
 import { 
   Calendar,
   Users,
@@ -799,6 +799,7 @@ const MarkAttendanceModal: React.FC<{
   onSave: (record: Partial<AttendanceRecord>) => void;
   onClose: () => void;
 }> = ({ students, courses, date, onSave, onClose }) => {
+  const { toast } = useToast();
   const [formData, setFormData] = React.useState({
     studentId: '',
     courseId: '',
@@ -1127,6 +1128,7 @@ const BulkAttendanceModal: React.FC<{
   onSave: (courseId: string, status: 'present' | 'absent') => void;
   onClose: () => void;
 }> = ({ courses, onSave, onClose }) => {
+  const { toast } = useToast();
   const [selectedCourse, setSelectedCourse] = React.useState('');
   const [defaultStatus, setDefaultStatus] = React.useState<'present' | 'absent'>('present');
 

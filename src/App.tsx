@@ -75,6 +75,7 @@ const App = () => (
             <Route path="/instructor/analytics" element={<InstructorAnalytics />} />
             <Route path="/instructor/grading" element={<InstructorGrading />} />
             <Route path="/instructor/attendance" element={<InstructorAttendance />} />
+            <Route path="/instructor/behavior" element={<InstructorBehavior />} />
             <Route path="/instructor/chatbot" element={<InstructorChatbot />} />
             <Route path="/instructor/settings" element={<InstructorSettings />} />
             

@@ -65,6 +65,12 @@ const navigationItems: NavItem[] = [
     path: '/instructor/grading'
   },
   {
+    id: 'behavior',
+    label: 'التقييم السلوكي',
+    icon: TrendingUp,
+    path: '/instructor/behavior'
+  },
+  {
     id: 'chatbot',
     label: 'المساعد الذكي',
     icon: MessageCircle,

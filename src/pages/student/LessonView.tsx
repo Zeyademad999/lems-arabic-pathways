@@ -4,6 +4,8 @@ import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { VideoPlayer } from '@/components/course/VideoPlayer';
+import { ProgressionService } from '@/lib/progressionService';
+import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowRight, 
   ArrowLeft, 
@@ -64,6 +66,7 @@ const mockLesson: Lesson = {
 
 const LessonView = () => {
   const { courseId, lessonId } = useParams();
+  const { toast } = useToast();
   const [lessonCompleted, setLessonCompleted] = React.useState(false);
   const [showTranscript, setShowTranscript] = React.useState(false);
   const [watchTime, setWatchTime] = React.useState(0);
@@ -71,18 +74,36 @@ const LessonView = () => {
   // In real app, fetch lesson data based on courseId and lessonId
   const lesson = mockLesson;
 
+  // Check if lesson is already completed
+  React.useEffect(() => {
+    if (courseId && lessonId) {
+      const progress = ProgressionService.getCourseProgress(courseId);
+      setLessonCompleted(progress.completedLessons.includes(lessonId));
+    }
+  }, [courseId, lessonId]);
+
   const handleVideoProgress = (currentTime: number, duration: number) => {
     setWatchTime(currentTime);
     
     // Mark as completed when 80% watched
     if (currentTime / duration >= 0.8 && !lessonCompleted) {
-      setLessonCompleted(true);
+      handleMarkComplete();
     }
   };
 
   const handleMarkComplete = () => {
-    setLessonCompleted(true);
-    // In real app, update lesson completion status
+    if (!lessonCompleted && courseId && lessonId) {
+      setLessonCompleted(true);
+      
+      // Get section ID from lesson ID (assuming lesson IDs map to sections)
+      const sectionId = lessonId; // Simplified mapping
+      ProgressionService.completeLesson(courseId, sectionId, lessonId);
+      
+      toast({
+        title: "تم إكمال الدرس!",
+        description: "يمكنك الآن الانتقال إلى الدرس التالي",
+      });
+    }
   };
 
   const handleDownloadAttachment = (filename: string) => {

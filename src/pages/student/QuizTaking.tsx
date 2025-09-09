@@ -1,10 +1,12 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { ProgressionService } from '@/lib/progressionService';
 import { 
   ArrowRight, 
   Clock, 
@@ -13,7 +15,8 @@ import {
   Award,
   RotateCcw,
   Send,
-  ArrowLeft
+  ArrowLeft,
+  Unlock
 } from 'lucide-react';
 
 interface QuizQuestion {
@@ -112,6 +115,8 @@ const mockQuiz: Quiz = {
 
 const QuizTaking = () => {
   const { courseId, quizId } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentQuestion, setCurrentQuestion] = React.useState(0);
   const [answers, setAnswers] = React.useState<{ [questionId: string]: any }>({});
   const [timeLeft, setTimeLeft] = React.useState(0);
@@ -119,6 +124,7 @@ const QuizTaking = () => {
   const [quizCompleted, setQuizCompleted] = React.useState(false);
   const [showResults, setShowResults] = React.useState(false);
   const [score, setScore] = React.useState(0);
+  const [unlockedNext, setUnlockedNext] = React.useState(false);
 
   const quiz = mockQuiz;
 
@@ -176,6 +182,25 @@ const QuizTaking = () => {
     setScore(finalScore);
     setQuizCompleted(true);
     setShowResults(true);
+
+    // Update progression using the service
+    if (courseId && quizId) {
+      const passed = ProgressionService.completeQuiz(courseId, quizId, finalScore, quiz.minimumScore);
+      
+      if (passed) {
+        setUnlockedNext(true);
+        toast({
+          title: "مبروك! نجحت في الاختبار",
+          description: "تم فتح القسم التالي من الكورس",
+        });
+      } else {
+        toast({
+          title: "يمكنك إعادة المحاولة",
+          description: `تحتاج ${quiz.minimumScore}% على الأقل للنجاح`,
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -298,6 +323,19 @@ const QuizTaking = () => {
                     {score}%
                   </span>
                 </div>
+
+                {/* Unlock notification */}
+                {unlockedNext && (
+                  <div className="p-4 bg-success/10 rounded-lg border border-success/20">
+                    <div className="flex items-center gap-3 justify-center">
+                      <Unlock className="h-6 w-6 text-success" />
+                      <div>
+                        <p className="font-semibold text-success">تم فتح محتوى جديد!</p>
+                        <p className="text-sm text-success/80">يمكنك الآن الوصول إلى القسم التالي</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -317,10 +355,10 @@ const QuizTaking = () => {
 
               <div className="flex items-center justify-center gap-4">
                 <Button 
-                  onClick={() => window.location.href = `/courses/${courseId}`}
+                  onClick={() => navigate(`/courses/${courseId}`)}
                   className="lems-button-primary"
                 >
-                  العودة للكورس
+                  {isPassed ? 'استكشاف المحتوى الجديد' : 'العودة للكورس'}
                 </Button>
                 
                 {!isPassed && quiz.attempts + 1 < quiz.maxAttempts && (
@@ -330,6 +368,15 @@ const QuizTaking = () => {
                   >
                     <RotateCcw className="h-4 w-4 ml-2" />
                     إعادة المحاولة
+                  </Button>
+                )}
+
+                {isPassed && (
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigate(`/quiz/${quizId}/results`)}
+                  >
+                    عرض النتائج التفصيلية
                   </Button>
                 )}
               </div>

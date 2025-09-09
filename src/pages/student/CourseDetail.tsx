@@ -4,9 +4,11 @@ import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CourseNavigation } from '@/components/course/CourseNavigation';
+import { ProgressionService } from '@/lib/progressionService';
 import { 
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Unlock
 } from 'lucide-react';
 
 interface Lesson {
@@ -233,9 +235,62 @@ const CourseDetail = () => {
   const { courseId } = useParams();
   const [selectedSection, setSelectedSection] = React.useState<string>('1');
   const [showSidebar, setShowSidebar] = React.useState(true);
+  const [courseProgress, setCourseProgress] = React.useState(null);
 
   // In real app, fetch course data based on courseId
-  const course = mockCourse;
+  const baseCourse = mockCourse;
+
+  // Update course data with progression service
+  React.useEffect(() => {
+    if (courseId) {
+      const progress = ProgressionService.getCourseProgress(courseId);
+      setCourseProgress(progress);
+
+      // Listen for progress updates
+      const handleProgressUpdate = (event: any) => {
+        if (event.detail.courseId === courseId) {
+          setCourseProgress(event.detail.progress);
+        }
+      };
+
+      window.addEventListener('courseProgressUpdate', handleProgressUpdate);
+      return () => window.removeEventListener('courseProgressUpdate', handleProgressUpdate);
+    }
+  }, [courseId]);
+
+  // Merge base course data with progression data
+  const course = React.useMemo(() => {
+    if (!courseProgress) return baseCourse;
+
+    const updatedSections = baseCourse.sections.map(section => {
+      const progressSection = courseProgress.sections.find(p => p.sectionId === section.id);
+      const quizProgress = section.quiz ? courseProgress.quizResults[section.quiz.id] : null;
+
+      return {
+        ...section,
+        unlocked: progressSection?.unlocked || false,
+        completed: progressSection?.completed || false,
+        progress: progressSection?.progress || 0,
+        lessons: section.lessons.map(lesson => ({
+          ...lesson,
+          completed: courseProgress.completedLessons.includes(lesson.id)
+        })),
+        quiz: section.quiz ? {
+          ...section.quiz,
+          completed: !!quizProgress,
+          passed: quizProgress?.passed || false,
+          bestScore: quizProgress?.bestScore,
+          attempts: quizProgress?.attempts || 0
+        } : undefined
+      };
+    });
+
+    return {
+      ...baseCourse,
+      sections: updatedSections,
+      overallProgress: courseProgress.overallProgress
+    };
+  }, [baseCourse, courseProgress]);
 
   const currentSection = course.sections.find(s => s.id === selectedSection);
 

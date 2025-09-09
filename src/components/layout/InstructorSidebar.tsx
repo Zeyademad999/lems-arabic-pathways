@@ -45,12 +45,6 @@ const navigationItems: NavItem[] = [
     path: '/instructor/courses'
   },
   {
-    id: 'create-course',
-    label: 'إنشاء كورس جديد',
-    icon: Plus,
-    path: '/instructor/create-course'
-  },
-  {
     id: 'students',
     label: 'إدارة الطلاب',
     icon: Users,

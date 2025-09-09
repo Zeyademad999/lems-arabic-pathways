@@ -4,12 +4,8 @@ import {
   Home, 
   BookOpen, 
   Users, 
-  ClipboardList, 
-  BarChart3, 
   Settings,
-  GraduationCap,
   FileText,
-  Award,
   Calendar,
   MessageCircle
 } from 'lucide-react';
@@ -45,31 +41,10 @@ const navigationItems: NavItem[] = [
     roles: ['student', 'instructor', 'admin']
   },
   {
-    id: 'assignments',
-    label: 'الواجبات',
-    icon: ClipboardList,
-    path: '/assignments',
-    roles: ['student', 'instructor']
-  },
-  {
     id: 'quizzes',
     label: 'الاختبارات',
     icon: FileText,
     path: '/quizzes',
-    roles: ['student', 'instructor']
-  },
-  {
-    id: 'progress',
-    label: 'التقدم',
-    icon: BarChart3,
-    path: '/progress',
-    roles: ['student', 'instructor', 'admin']
-  },
-  {
-    id: 'behavior',
-    label: 'التقييم السلوكي',
-    icon: Award,
-    path: '/behavior',
     roles: ['student', 'instructor']
   },
   {
@@ -84,13 +59,6 @@ const navigationItems: NavItem[] = [
     label: 'الطلاب',
     icon: Users,
     path: '/instructor/students',
-    roles: ['instructor', 'admin']
-  },
-  {
-    id: 'create-course',
-    label: 'إنشاء كورس',
-    icon: GraduationCap,
-    path: '/instructor/create-course',
     roles: ['instructor', 'admin']
   },
   {

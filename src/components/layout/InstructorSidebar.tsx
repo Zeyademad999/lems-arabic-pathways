@@ -4,12 +4,8 @@ import {
   Home, 
   BookOpen, 
   Users, 
-  ClipboardList, 
-  BarChart3, 
   Settings,
-  GraduationCap,
   FileText,
-  Award,
   Calendar,
   MessageCircle,
   Plus,
@@ -67,12 +63,6 @@ const navigationItems: NavItem[] = [
     label: 'التصحيح والدرجات',
     icon: UserCheck,
     path: '/instructor/grading'
-  },
-  {
-    id: 'progress',
-    label: 'متابعة التقدم',
-    icon: BarChart3,
-    path: '/instructor/progress'
   },
   {
     id: 'chatbot',

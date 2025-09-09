@@ -245,6 +245,44 @@ const Attendance = () => {
           </Card>
         </div>
 
+        {/* Upcoming Sessions Alert */}
+        <Card className="lems-card bg-primary/5 border-primary/20">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <CalendarDays className="h-6 w-6 text-primary" />
+              <h3 className="text-lg font-semibold text-primary">الجلسات القادمة اليوم</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-background rounded-lg border">
+                <div className="space-y-2">
+                  <h4 className="font-medium">تطبيقات الإكسل المتقدمة</h4>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p>⏰ 10:00 - 12:00</p>
+                    <p>📍 معمل الحاسوب</p>
+                    <p>👨‍🏫 أ. حسن محمود</p>
+                  </div>
+                  <Badge className="text-xs" variant="outline">
+                    يبدأ خلال 30 دقيقة
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-4 bg-background rounded-lg border">
+                <div className="space-y-2">
+                  <h4 className="font-medium">مراجعة السلوك المهني</h4>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p>⏰ 14:00 - 16:00</p>
+                    <p>📍 قاعة التدريب B</p>
+                    <p>👨‍🏫 أ. فاطمة علي</p>
+                  </div>
+                  <Badge className="text-xs bg-success/10 text-success">
+                    3 ساعات متبقية
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* Monthly Calendar View */}
         <Card className="lems-card">
           <div className="space-y-4">
@@ -259,12 +297,55 @@ const Attendance = () => {
               </div>
             </div>
             
-            {/* Calendar placeholder */}
-            <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Calendar className="h-12 w-12 text-muted-foreground mx-auto" />
-                <p className="text-muted-foreground">التقويم الشهري سيظهر هنا</p>
-                <p className="text-sm text-muted-foreground">يتضمن تفاصيل الحضور والغياب لكل يوم</p>
+            {/* Simple Calendar Grid */}
+            <div className="grid grid-cols-7 gap-2">
+              {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
+                <div key={day} className="text-center p-2 font-medium text-sm text-muted-foreground">
+                  {day}
+                </div>
+              ))}
+              
+              {/* Calendar days */}
+              {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
+                const hasSession = [11, 12, 13, 14, 15].includes(day);
+                const isToday = day === 15;
+                const attendanceStatus = day === 12 ? 'absent' : day === 14 ? 'late' : hasSession ? 'present' : null;
+                
+                return (
+                  <div 
+                    key={day} 
+                    className={`
+                      text-center p-2 rounded-lg text-sm cursor-pointer transition-colors
+                      ${isToday ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted'}
+                      ${hasSession && !isToday ? 'border border-muted-foreground' : ''}
+                    `}
+                  >
+                    <div>{day}</div>
+                    {attendanceStatus && (
+                      <div className="mt-1">
+                        {attendanceStatus === 'present' && <div className="w-2 h-2 bg-success rounded-full mx-auto"></div>}
+                        {attendanceStatus === 'absent' && <div className="w-2 h-2 bg-destructive rounded-full mx-auto"></div>}
+                        {attendanceStatus === 'late' && <div className="w-2 h-2 bg-warning rounded-full mx-auto"></div>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Legend */}
+            <div className="flex items-center justify-center gap-4 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-success rounded-full"></div>
+                <span>حاضر</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-warning rounded-full"></div>
+                <span>متأخر</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-destructive rounded-full"></div>
+                <span>غائب</span>
               </div>
             </div>
           </div>

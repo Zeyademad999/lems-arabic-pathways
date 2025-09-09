@@ -272,46 +272,78 @@ const Quizzes = () => {
           </div>
         </div>
 
+        {/* Upcoming Quizzes Alert */}
+        {mockQuizzes.filter(q => q.status === 'available' && new Date(q.dueDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).length > 0 && (
+          <Card className="lems-card bg-warning/5 border-warning/20">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
+              <div className="space-y-2">
+                <h3 className="font-semibold text-warning">تنبيه: اختبارات قادمة خلال أسبوع</h3>
+                <div className="space-y-1">
+                  {mockQuizzes
+                    .filter(q => q.status === 'available' && new Date(q.dueDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
+                    .map(quiz => (
+                      <p key={quiz.id} className="text-sm text-muted-foreground">
+                        • {quiz.title} - موعد الانتهاء: {quiz.dueDate}
+                      </p>
+                    ))
+                  }
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Quizzes List */}
         <div className="space-y-4">
           {filteredQuizzes.map((quiz) => (
-            <Card key={quiz.id} className="lems-card">
+            <Card key={quiz.id} className="lems-card hover:shadow-lg transition-all duration-200">
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(quiz.status)}
-                      <h3 className="font-semibold text-education-primary">
+                      <h3 className="font-semibold text-education-primary text-lg">
                         {quiz.title}
                       </h3>
                       {getStatusBadge(quiz.status)}
                     </div>
-                    <p className="text-sm text-muted-foreground">{quiz.course}</p>
-                    <p className="text-sm leading-relaxed">{quiz.description}</p>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground font-medium">{quiz.course}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{quiz.description}</p>
+                    </div>
                     
                     <div className="flex items-center gap-4 text-sm">
-                      <span className={`font-medium ${getTypeColor(quiz.type)}`}>
+                      <Badge variant="outline" className={getTypeColor(quiz.type)}>
                         {quiz.type}
-                      </span>
-                      <span className={`font-medium ${getDifficultyColor(quiz.difficulty)}`}>
+                      </Badge>
+                      <Badge variant="outline" className={getDifficultyColor(quiz.difficulty)}>
                         {quiz.difficulty}
-                      </span>
+                      </Badge>
+                      {new Date(quiz.dueDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) && quiz.status === 'available' && (
+                        <Badge variant="destructive" className="text-xs">
+                          ⏰ عاجل
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   
                   <div className="text-left space-y-2">
                     {quiz.bestScore && (
-                      <div className="text-center p-3 bg-success/10 rounded-lg">
+                      <div className="text-center p-4 bg-success/10 rounded-lg border border-success/20">
                         <p className="text-2xl font-bold text-success">
                           {quiz.bestScore}%
                         </p>
                         <p className="text-xs text-success">أفضل درجة</p>
+                        {quiz.bestScore >= 90 && (
+                          <Trophy className="h-4 w-4 text-warning mx-auto mt-1" />
+                        )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-muted/30 rounded-lg p-3">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
                     <span>{quiz.questions} سؤال</span>
@@ -331,35 +363,61 @@ const Quizzes = () => {
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-border">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm space-y-1">
                     {quiz.lastAttempt && (
-                      <span>آخر محاولة: {quiz.lastAttempt}</span>
+                      <p className="text-muted-foreground">آخر محاولة: {quiz.lastAttempt}</p>
+                    )}
+                    {quiz.attempts >= quiz.maxAttempts && quiz.status !== 'completed' && (
+                      <p className="text-destructive text-xs">تم استنفاد جميع المحاولات</p>
                     )}
                   </div>
 
                   <div className="flex items-center gap-2">
                     {quiz.status === 'available' && (
-                      <Button size="sm" className="lems-button-primary">
-                        <Play className="h-4 w-4 ml-1" />
-                        بدء الاختبار
-                      </Button>
+                      <>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => window.location.href = `/quiz/${quiz.id}/preview`}
+                        >
+                          معاينة
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          className="lems-button-primary"
+                          onClick={() => window.location.href = `/quiz/${quiz.id}/take`}
+                        >
+                          <Play className="h-4 w-4 ml-1" />
+                          بدء الاختبار
+                        </Button>
+                      </>
                     )}
                     
                     {quiz.status === 'completed' && quiz.attempts < quiz.maxAttempts && (
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.location.href = `/quiz/${quiz.id}/retake`}
+                      >
                         <RotateCcw className="h-4 w-4 ml-1" />
                         إعادة المحاولة
                       </Button>
                     )}
                     
                     {quiz.status === 'completed' && (
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.location.href = `/quiz/${quiz.id}/results`}
+                      >
+                        <Target className="h-4 w-4 ml-1" />
                         عرض النتائج
                       </Button>
                     )}
                     
                     {quiz.status === 'locked' && (
                       <Button size="sm" disabled variant="outline">
+                        <AlertCircle className="h-4 w-4 ml-1" />
                         غير متاح
                       </Button>
                     )}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { LEMSLayout } from '@/components/layout/LEMSLayout';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -233,6 +233,7 @@ const mockCourse: Course = {
 
 const CourseDetail = () => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
   const [selectedSection, setSelectedSection] = React.useState<string>('1');
   const [showSidebar, setShowSidebar] = React.useState(true);
   const [courseProgress, setCourseProgress] = React.useState(null);
@@ -296,12 +297,12 @@ const CourseDetail = () => {
 
   const handleStartLesson = (lessonId: string) => {
     // Navigate to lesson view
-    window.location.href = `/courses/${courseId}/lessons/${lessonId}`;
+    navigate(`/courses/${courseId}/lessons/${lessonId}`);
   };
 
   const handleStartQuiz = (quizId: string) => {
     // Navigate to quiz
-    window.location.href = `/courses/${courseId}/quizzes/${quizId}`;
+    navigate(`/courses/${courseId}/quizzes/${quizId}`);
   };
 
   return (

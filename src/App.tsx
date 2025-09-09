@@ -61,7 +61,6 @@ const App = () => (
             <Route path="/quiz/:quizId/retake" element={<QuizTaking />} />
             <Route path="/quiz/:quizId/results" element={<QuizResults />} />
             
-            <Route path="/attendance" element={<Attendance />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/settings" element={<Settings />} />
             
@@ -74,7 +73,6 @@ const App = () => (
             <Route path="/instructor/quizzes" element={<InstructorQuizzes />} />
             <Route path="/instructor/analytics" element={<InstructorAnalytics />} />
             <Route path="/instructor/grading" element={<InstructorGrading />} />
-            <Route path="/instructor/attendance" element={<InstructorAttendance />} />
             <Route path="/instructor/chatbot" element={<InstructorChatbot />} />
             <Route path="/instructor/settings" element={<InstructorSettings />} />
             

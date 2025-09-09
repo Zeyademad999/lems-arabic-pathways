@@ -15,6 +15,11 @@ const Index = () => {
       role: userRole,
       isAuthenticated: true
     });
+    
+    // Redirect instructor to instructor portal
+    if (userRole === 'instructor') {
+      window.location.href = '/instructor';
+    }
   };
 
   const handleLogout = () => {

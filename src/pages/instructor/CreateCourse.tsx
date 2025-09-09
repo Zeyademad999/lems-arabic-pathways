@@ -1,5 +1,5 @@
 import React from 'react';
-import { LEMSLayout } from '@/components/layout/LEMSLayout';
+import { InstructorLayout } from '@/components/layout/InstructorLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,7 +44,7 @@ const CreateCourse = () => {
   };
 
   return (
-    <LEMSLayout userRole="instructor">
+    <InstructorLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -235,7 +235,7 @@ const CreateCourse = () => {
           </div>
         </Card>
       </div>
-    </LEMSLayout>
+    </InstructorLayout>
   );
 };
 

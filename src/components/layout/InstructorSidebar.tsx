@@ -57,12 +57,6 @@ const navigationItems: NavItem[] = [
     path: '/instructor/students'
   },
   {
-    id: 'assignments',
-    label: 'الواجبات',
-    icon: ClipboardList,
-    path: '/instructor/assignments'
-  },
-  {
     id: 'quizzes',
     label: 'الاختبارات',
     icon: FileText,
@@ -73,18 +67,6 @@ const navigationItems: NavItem[] = [
     label: 'تتبع الحضور',
     icon: Calendar,
     path: '/instructor/attendance'
-  },
-  {
-    id: 'behavior',
-    label: 'التقييم السلوكي',
-    icon: Award,
-    path: '/instructor/behavior'
-  },
-  {
-    id: 'analytics',
-    label: 'التقارير والتحليلات',
-    icon: TrendingUp,
-    path: '/instructor/analytics'
   },
   {
     id: 'grading',

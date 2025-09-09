@@ -163,195 +163,100 @@ const Behavior = () => {
     <LEMSLayout userRole="student">
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold text-education-primary">التقييم السلوكي</h1>
-          <p className="text-muted-foreground">
-            تابع تقييمك السلوكي والمهني من المدربين والشركات المتعاونة
-          </p>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">التقييم السلوكي</h1>
+          <p className="text-muted-foreground">تابع تقييمك السلوكي والمهني</p>
         </div>
 
-        {/* Overall Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
-                <Award className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{overallBehaviorScore}%</p>
-                <p className="text-sm text-muted-foreground">التقييم العام</p>
-              </div>
-            </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-blue-600">{overallBehaviorScore}%</p>
+            <p className="text-sm text-muted-foreground">التقييم العام</p>
           </Card>
-
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-success/10 text-success rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{positiveRecords}</p>
-                <p className="text-sm text-muted-foreground">تقييمات إيجابية</p>
-              </div>
-            </div>
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-green-600">{positiveRecords}</p>
+            <p className="text-sm text-muted-foreground">تقييمات إيجابية</p>
           </Card>
-
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-warning/10 text-warning rounded-lg flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{improvementNeeded}</p>
-                <p className="text-sm text-muted-foreground">نقاط للتحسين</p>
-              </div>
-            </div>
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-orange-500">{improvementNeeded}</p>
+            <p className="text-sm text-muted-foreground">للتحسين</p>
           </Card>
-
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
-                <FileText className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{mockBehaviorRecords.length}</p>
-                <p className="text-sm text-muted-foreground">إجمالي التقييمات</p>
-              </div>
-            </div>
+          <Card className="p-4">
+            <p className="text-2xl font-bold">{mockBehaviorRecords.length}</p>
+            <p className="text-sm text-muted-foreground">إجمالي التقييمات</p>
           </Card>
         </div>
 
-        {/* Company Evaluations */}
+        {/* Company Evaluation */}
         {mockCompanyEvaluations.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">تقييمات الشركات</h2>
-            
+          <Card className="p-4">
+            <h3 className="font-semibold mb-4">تقييم الشركة</h3>
             {mockCompanyEvaluations.map((evaluation) => (
-              <Card key={evaluation.id} className="lems-card">
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <h3 className="font-semibold text-education-primary">
-                        {evaluation.company}
-                      </h3>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{evaluation.evaluationDate}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          <span>المشرف: {evaluation.supervisor}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-center p-4 bg-primary/5 rounded-lg">
-                      <p className="text-3xl font-bold text-primary">{evaluation.overallScore}%</p>
-                      <p className="text-xs text-muted-foreground">التقييم العام</p>
-                    </div>
+              <div key={evaluation.id} className="space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">{evaluation.company}</p>
+                    <p className="text-sm text-muted-foreground">{evaluation.evaluationDate} • {evaluation.supervisor}</p>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    {Object.entries(evaluation.categories).map(([key, value]) => (
-                      <div key={key} className="text-center space-y-2">
-                        <p className="text-sm text-muted-foreground">
-                          {getCategoryName(key)}
-                        </p>
-                        <p className={`text-lg font-semibold ${getScoreColor(value, 100)}`}>
-                          {value}%
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-3 border-t border-border">
-                    <p className="text-sm leading-relaxed">{evaluation.comments}</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-blue-600">{evaluation.overallScore}%</p>
+                    <p className="text-xs text-muted-foreground">التقييم العام</p>
                   </div>
                 </div>
-              </Card>
+                
+                <div className="grid grid-cols-3 md:grid-cols-5 gap-2 text-center">
+                  {Object.entries(evaluation.categories).map(([key, value]) => (
+                    <div key={key} className="p-2 bg-muted/50 rounded">
+                      <p className="text-sm font-medium">{value}%</p>
+                      <p className="text-xs text-muted-foreground">{getCategoryName(key)}</p>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded">
+                  {evaluation.comments}
+                </p>
+              </div>
             ))}
-          </div>
+          </Card>
         )}
 
-        {/* Behavior Records */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">سجل التقييمات السلوكية</h2>
-          
+        {/* Recent Evaluations */}
+        <Card className="p-4">
+          <h3 className="font-semibold mb-4">التقييمات الأخيرة</h3>
           <div className="space-y-3">
             {mockBehaviorRecords.map((record) => (
-              <Card key={record.id} className="lems-card">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        {getStatusIcon(record.status)}
-                        <h3 className="font-semibold text-education-primary">
-                          {getCategoryName(record.category)}
-                        </h3>
-                        <Badge variant="outline" className="text-xs">
-                          {record.course}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{record.date}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          <span>المقيم: {record.evaluator}</span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-sm leading-relaxed">{record.comments}</p>
-                    </div>
-                    
-                    <div className="text-center p-3 bg-muted/20 rounded-lg min-w-16">
-                      <p className={`text-xl font-bold ${getScoreColor(record.score, record.maxScore)}`}>
-                        {record.score}/{record.maxScore}
-                      </p>
-                      <p className="text-xs text-muted-foreground">الدرجة</p>
-                    </div>
+              <div key={record.id} className="flex items-center justify-between p-3 border rounded">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(record.status)}
+                  <div>
+                    <p className="font-medium">{getCategoryName(record.category)}</p>
+                    <p className="text-sm text-muted-foreground">{record.date} • {record.evaluator}</p>
                   </div>
                 </div>
-              </Card>
+                <div className="text-right">
+                  <p className={`text-lg font-bold ${getScoreColor(record.score, record.maxScore)}`}>
+                    {record.score}/{record.maxScore}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        </Card>
 
-        {/* Improvement Recommendations */}
-        <Card className="lems-card">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Target className="h-5 w-5 text-warning" />
-              <h3 className="font-semibold">توصيات للتحسين</h3>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="p-4 bg-warning/10 rounded-lg border border-warning/20">
-                <h4 className="font-medium text-warning mb-2">مهارات التواصل</h4>
-                <p className="text-sm text-muted-foreground">
-                  يُنصح بالمشاركة أكثر في النقاشات الجماعية وطرح الأسئلة لتحسين مهارات التواصل
-                </p>
-              </div>
-              
-              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                <h4 className="font-medium text-primary mb-2">القيادة</h4>
-                <p className="text-sm text-muted-foreground">
-                  اطلب المزيد من الفرص لقيادة المشاريع الجماعية لتطوير مهارات القيادة
-                </p>
-              </div>
-            </div>
-            
-            <div className="pt-3 border-t border-border">
-              <Button className="lems-button-primary">
-                <MessageSquare className="h-4 w-4 ml-2" />
-                طلب جلسة إرشاد
-              </Button>
-            </div>
+        {/* Improvement Tips */}
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3">نصائح للتحسين</h3>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground p-3 bg-orange-50 rounded">
+              💬 <strong>التواصل:</strong> شارك أكثر في النقاشات وطرح الأسئلة
+            </p>
+            <p className="text-sm text-muted-foreground p-3 bg-blue-50 rounded">
+              👥 <strong>القيادة:</strong> اطلب فرص لقيادة المشاريع الجماعية
+            </p>
           </div>
+          <Button className="mt-4 w-full">طلب جلسة إرشاد</Button>
         </Card>
       </div>
     </LEMSLayout>

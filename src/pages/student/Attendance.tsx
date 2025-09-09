@@ -154,294 +154,90 @@ const Attendance = () => {
     <LEMSLayout userRole="student">
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold text-education-primary">سجل الحضور</h1>
-          <p className="text-muted-foreground">
-            تابع سجل حضورك في جلسات التدريب والكورسات
-          </p>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">سجل الحضور</h1>
+          <p className="text-muted-foreground">تابع سجل حضورك في التدريب</p>
         </div>
 
-        {/* Quick Check-in Section */}
-        <Card className="lems-card bg-primary/5 border-primary/20">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <QrCode className="h-6 w-6 text-primary" />
-              <h3 className="text-lg font-semibold text-primary">تسجيل الحضور السريع</h3>
+        {/* Quick Check-in */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold">الجلسة الحالية</h3>
+              <p className="text-sm text-muted-foreground">إدارة المخازن المتقدمة</p>
+              <p className="text-xs text-muted-foreground">09:00 - 11:30 • قاعة A</p>
             </div>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  الجلسة الحالية: <span className="font-medium">إدارة المخازن المتقدمة</span>
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  الوقت: <span className="font-medium">09:00 - 11:30</span>
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  المكان: <span className="font-medium">قاعة التدريب A</span>
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button className="lems-button-primary">
-                  <CheckCircle2 className="h-4 w-4 ml-2" />
-                  تسجيل الحضور
-                </Button>
-                <Button variant="outline">
-                  <QrCode className="h-4 w-4 ml-2" />
-                  رمز QR
-                </Button>
-              </div>
-            </div>
+            <Button>
+              <CheckCircle2 className="h-4 w-4 ml-2" />
+              تسجيل الحضور
+            </Button>
           </div>
         </Card>
 
-        {/* Attendance Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
-                <TrendingUp className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{attendanceStats.attendanceRate}%</p>
-                <p className="text-sm text-muted-foreground">نسبة الحضور</p>
-              </div>
-            </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-primary">{attendanceStats.attendanceRate}%</p>
+            <p className="text-sm text-muted-foreground">نسبة الحضور</p>
           </Card>
-
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-success/10 text-success rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{attendanceStats.presentSessions}</p>
-                <p className="text-sm text-muted-foreground">جلسات حضور</p>
-              </div>
-            </div>
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-green-600">{attendanceStats.presentSessions}</p>
+            <p className="text-sm text-muted-foreground">حضور</p>
           </Card>
-
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-warning/10 text-warning rounded-lg flex items-center justify-center">
-                <AlertCircle className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{attendanceStats.lateSessions}</p>
-                <p className="text-sm text-muted-foreground">تأخير</p>
-              </div>
-            </div>
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-orange-500">{attendanceStats.lateSessions}</p>
+            <p className="text-sm text-muted-foreground">تأخير</p>
           </Card>
-
-          <Card className="lems-card">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-destructive/10 text-destructive rounded-lg flex items-center justify-center">
-                <XCircle className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{attendanceStats.absentSessions}</p>
-                <p className="text-sm text-muted-foreground">غياب</p>
-              </div>
-            </div>
+          <Card className="p-4">
+            <p className="text-2xl font-bold text-red-500">{attendanceStats.absentSessions}</p>
+            <p className="text-sm text-muted-foreground">غياب</p>
           </Card>
         </div>
 
-        {/* Upcoming Sessions Alert */}
-        <Card className="lems-card bg-primary/5 border-primary/20">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <CalendarDays className="h-6 w-6 text-primary" />
-              <h3 className="text-lg font-semibold text-primary">الجلسات القادمة اليوم</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-background rounded-lg border">
-                <div className="space-y-2">
-                  <h4 className="font-medium">تطبيقات الإكسل المتقدمة</h4>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p>⏰ 10:00 - 12:00</p>
-                    <p>📍 معمل الحاسوب</p>
-                    <p>👨‍🏫 أ. حسن محمود</p>
-                  </div>
-                  <Badge className="text-xs" variant="outline">
-                    يبدأ خلال 30 دقيقة
-                  </Badge>
-                </div>
-              </div>
-              <div className="p-4 bg-background rounded-lg border">
-                <div className="space-y-2">
-                  <h4 className="font-medium">مراجعة السلوك المهني</h4>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p>⏰ 14:00 - 16:00</p>
-                    <p>📍 قاعة التدريب B</p>
-                    <p>👨‍🏫 أ. فاطمة علي</p>
-                  </div>
-                  <Badge className="text-xs bg-success/10 text-success">
-                    3 ساعات متبقية
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Monthly Calendar View */}
-        <Card className="lems-card">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <CalendarDays className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">عرض شهري - يناير 2024</h3>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">الشهر السابق</Button>
-                <Button variant="outline" size="sm">الشهر التالي</Button>
-              </div>
-            </div>
-            
-            {/* Simple Calendar Grid */}
-            <div className="grid grid-cols-7 gap-2">
-              {['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
-                <div key={day} className="text-center p-2 font-medium text-sm text-muted-foreground">
-                  {day}
-                </div>
-              ))}
-              
-              {/* Calendar days */}
-              {Array.from({ length: 31 }, (_, i) => i + 1).map(day => {
-                const hasSession = [11, 12, 13, 14, 15].includes(day);
-                const isToday = day === 15;
-                const attendanceStatus = day === 12 ? 'absent' : day === 14 ? 'late' : hasSession ? 'present' : null;
-                
-                return (
-                  <div 
-                    key={day} 
-                    className={`
-                      text-center p-2 rounded-lg text-sm cursor-pointer transition-colors
-                      ${isToday ? 'bg-primary text-primary-foreground font-bold' : 'hover:bg-muted'}
-                      ${hasSession && !isToday ? 'border border-muted-foreground' : ''}
-                    `}
-                  >
-                    <div>{day}</div>
-                    {attendanceStatus && (
-                      <div className="mt-1">
-                        {attendanceStatus === 'present' && <div className="w-2 h-2 bg-success rounded-full mx-auto"></div>}
-                        {attendanceStatus === 'absent' && <div className="w-2 h-2 bg-destructive rounded-full mx-auto"></div>}
-                        {attendanceStatus === 'late' && <div className="w-2 h-2 bg-warning rounded-full mx-auto"></div>}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            
-            {/* Legend */}
-            <div className="flex items-center justify-center gap-4 text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-success rounded-full"></div>
-                <span>حاضر</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-warning rounded-full"></div>
-                <span>متأخر</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-destructive rounded-full"></div>
-                <span>غائب</span>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Attendance Records */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">سجل الحضور التفصيلي</h2>
-          
+        {/* Upcoming Sessions */}
+        <Card className="p-4">
+          <h3 className="font-semibold mb-4">الجلسات القادمة</h3>
           <div className="space-y-3">
-            {mockAttendanceRecords.map((record) => (
-              <Card key={record.id} className="lems-card">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        {getStatusIcon(record.status)}
-                        <h3 className="font-semibold text-education-primary">
-                          {record.session}
-                        </h3>
-                        {getStatusBadge(record.status)}
-                      </div>
-                      
-                      <p className="text-sm text-muted-foreground">{record.course}</p>
-                      
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{record.date}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>{record.location}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          <span>{record.instructor}</span>
-                        </div>
-                      </div>
-                      
-                      {record.notes && (
-                        <p className="text-sm text-warning bg-warning/10 p-2 rounded">
-                          <strong>ملاحظة:</strong> {record.notes}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div className="text-left space-y-2">
-                      {record.checkIn && record.checkOut && (
-                        <div className="text-center p-3 bg-success/10 rounded-lg">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-sm">
-                              <Clock className="h-3 w-3" />
-                              <span>دخول: {record.checkIn}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm">
-                              <Clock className="h-3 w-3" />
-                              <span>خروج: {record.checkOut}</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              المدة: {formatDuration(record.checkIn, record.checkOut)}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
+            <div className="flex justify-between items-center p-3 bg-muted/50 rounded">
+              <div>
+                <p className="font-medium">تطبيقات الإكسل المتقدمة</p>
+                <p className="text-sm text-muted-foreground">10:00 - 12:00 • معمل الحاسوب</p>
+              </div>
+              <Badge variant="outline">30 دقيقة</Badge>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-muted/50 rounded">
+              <div>
+                <p className="font-medium">مراجعة السلوك المهني</p>
+                <p className="text-sm text-muted-foreground">14:00 - 16:00 • قاعة B</p>
+              </div>
+              <Badge variant="secondary">3 ساعات</Badge>
+            </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Recommendations */}
-        <Card className="lems-card">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">نصائح لتحسين الحضور</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-primary/10 rounded-lg">
-                <h4 className="font-medium text-primary mb-2">حافظ على الانتظام</h4>
-                <p className="text-sm text-muted-foreground">
-                  الحضور المنتظم يساعد على تحسين الفهم والاستفادة القصوى من التدريب
-                </p>
+        {/* Recent Attendance */}
+        <Card className="p-4">
+          <h3 className="font-semibold mb-4">سجل الحضور الأخير</h3>
+          <div className="space-y-3">
+            {mockAttendanceRecords.slice(0, 5).map((record) => (
+              <div key={record.id} className="flex items-center justify-between p-3 border rounded">
+                <div>
+                  <p className="font-medium">{record.session}</p>
+                  <p className="text-sm text-muted-foreground">{record.date} • {record.location}</p>
+                  {record.notes && (
+                    <p className="text-xs text-orange-600 mt-1">{record.notes}</p>
+                  )}
+                </div>
+                <div className="text-right">
+                  {getStatusBadge(record.status)}
+                  {record.checkIn && record.checkOut && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {record.checkIn} - {record.checkOut}
+                    </p>
+                  )}
+                </div>
               </div>
-              
-              <div className="p-4 bg-success/10 rounded-lg">
-                <h4 className="font-medium text-success mb-2">خطط مسبقاً</h4>
-                <p className="text-sm text-muted-foreground">
-                  راجع جدولك المسبق وخطط للمواصلات لتجنب التأخير
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </Card>
       </div>

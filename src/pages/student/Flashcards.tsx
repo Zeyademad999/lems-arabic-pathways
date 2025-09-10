@@ -377,9 +377,13 @@ const Flashcards = () => {
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Calendar className="h-3 w-3" />
                         آخر دراسة:{" "}
-                        {new Date(course.lastStudied).toLocaleDateString(
-                          "ar-SA"
-                        )}
+                        {(() => {
+                          const date = new Date(course.lastStudied);
+                          const day = date.getDate();
+                          const month = date.getMonth() + 1;
+                          const year = date.getFullYear();
+                          return `${day}/${month}/${year}`;
+                        })()}
                       </div>
                     )}
 

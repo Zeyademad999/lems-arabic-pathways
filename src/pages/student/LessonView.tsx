@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { VideoPlayer } from "@/components/course/VideoPlayer";
 import { ProgressionService } from "@/lib/progressionService";
 import { useToast } from "@/hooks/use-toast";
+import { useSignOut } from "@/hooks/useSignOut";
 import {
   ArrowRight,
   ArrowLeft,
@@ -69,12 +70,100 @@ const LessonView = () => {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signOut } = useSignOut();
   const [lessonCompleted, setLessonCompleted] = React.useState(false);
   const [showTranscript, setShowTranscript] = React.useState(false);
   const [watchTime, setWatchTime] = React.useState(0);
+  const [nextLesson, setNextLesson] = React.useState<string | null>(null);
+  const [previousLesson, setPreviousLesson] = React.useState<string | null>(
+    null
+  );
 
   // In real app, fetch lesson data based on courseId and lessonId
   const lesson = mockLesson;
+
+  // Mock course structure for navigation
+  const mockCourseStructure = {
+    sections: [
+      {
+        id: "1",
+        title: "مقدمة في اللوجستيات",
+        lessons: [
+          { id: "1", title: "ما هي اللوجستيات؟ - مقدمة شاملة" },
+          { id: "2", title: "تاريخ تطور اللوجستيات" },
+          { id: "3", title: "أهمية اللوجستيات في الاقتصاد الحديث" },
+        ],
+      },
+      {
+        id: "2",
+        title: "إدارة المخازن",
+        lessons: [
+          { id: "4", title: "مبادئ إدارة المخازن" },
+          { id: "5", title: "أنظمة التخزين الحديثة" },
+          { id: "6", title: "إدارة المخزون" },
+        ],
+      },
+    ],
+  };
+
+  // Find next and previous lessons
+  React.useEffect(() => {
+    if (!lessonId) return;
+
+    let foundCurrent = false;
+    let prevLessonId: string | null = null;
+    let nextLessonId: string | null = null;
+
+    for (const section of mockCourseStructure.sections) {
+      for (let i = 0; i < section.lessons.length; i++) {
+        const currentLesson = section.lessons[i];
+
+        if (currentLesson.id === lessonId) {
+          foundCurrent = true;
+
+          // Set previous lesson
+          if (i > 0) {
+            prevLessonId = section.lessons[i - 1].id;
+          } else {
+            // Check previous section's last lesson
+            const currentSectionIndex = mockCourseStructure.sections.findIndex(
+              (s) => s.id === section.id
+            );
+            if (currentSectionIndex > 0) {
+              const prevSection =
+                mockCourseStructure.sections[currentSectionIndex - 1];
+              if (prevSection.lessons.length > 0) {
+                prevLessonId =
+                  prevSection.lessons[prevSection.lessons.length - 1].id;
+              }
+            }
+          }
+
+          // Set next lesson
+          if (i < section.lessons.length - 1) {
+            nextLessonId = section.lessons[i + 1].id;
+          } else {
+            // Check next section's first lesson
+            const currentSectionIndex = mockCourseStructure.sections.findIndex(
+              (s) => s.id === section.id
+            );
+            if (currentSectionIndex < mockCourseStructure.sections.length - 1) {
+              const nextSection =
+                mockCourseStructure.sections[currentSectionIndex + 1];
+              if (nextSection.lessons.length > 0) {
+                nextLessonId = nextSection.lessons[0].id;
+              }
+            }
+          }
+          break;
+        }
+      }
+      if (foundCurrent) break;
+    }
+
+    setPreviousLesson(prevLessonId);
+    setNextLesson(nextLessonId);
+  }, [lessonId]);
 
   // Check if lesson is already completed
   React.useEffect(() => {
@@ -114,7 +203,7 @@ const LessonView = () => {
   };
 
   return (
-    <LEMSLayout userRole="student">
+    <LEMSLayout userRole="student" onSignOut={signOut}>
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -287,7 +376,14 @@ const LessonView = () => {
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={() => window.history.back()}
+                    disabled={!previousLesson}
+                    onClick={() => {
+                      if (previousLesson) {
+                        navigate(
+                          `/student/courses/${courseId}/lessons/${previousLesson}`
+                        );
+                      }
+                    }}
                   >
                     <ArrowRight className="h-4 w-4 ml-2" />
                     الدرس السابق
@@ -295,10 +391,17 @@ const LessonView = () => {
 
                   <Button
                     className="w-full justify-start lems-button-primary"
-                    disabled={!lessonCompleted}
+                    disabled={!lessonCompleted || !nextLesson}
+                    onClick={() => {
+                      if (nextLesson && lessonCompleted) {
+                        navigate(
+                          `/student/courses/${courseId}/lessons/${nextLesson}`
+                        );
+                      }
+                    }}
                   >
                     <ArrowLeft className="h-4 w-4 ml-2" />
-                    الدرس التالي
+                    {nextLesson ? "الدرس التالي" : "لا يوجد درس تالي"}
                   </Button>
                 </div>
 

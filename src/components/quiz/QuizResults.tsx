@@ -173,7 +173,13 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
                       محاولة رقم {attempt.attemptNumber}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(attempt.timestamp).toLocaleDateString("ar-SA")}
+                      {(() => {
+                        const date = new Date(attempt.timestamp);
+                        const day = date.getDate();
+                        const month = date.getMonth() + 1;
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`;
+                      })()}
                     </p>
                   </div>
                 </div>

@@ -29,6 +29,11 @@ const StudentCalendar = () => {
     React.useState<CalendarEvent | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
 
+  // Convert Arabic numerals to English
+  const toEnglishNumbers = (num: number): string => {
+    return num.toString();
+  };
+
   const upcomingEvents = getUpcomingEvents(7);
   const currentMonthEvents = getEventsForMonth(
     currentDate.getFullYear(),
@@ -80,7 +85,7 @@ const StudentCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">أحداث اليوم</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {todayEvents.length}
+                  {toEnglishNumbers(todayEvents.length)}
                 </p>
               </div>
             </div>
@@ -94,7 +99,7 @@ const StudentCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">الأسبوع القادم</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {upcomingEvents.length}
+                  {toEnglishNumbers(upcomingEvents.length)}
                 </p>
               </div>
             </div>
@@ -108,7 +113,9 @@ const StudentCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">الدروس</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {currentMonthEvents.filter((e) => e.type === "lesson").length}
+                  {toEnglishNumbers(
+                    currentMonthEvents.filter((e) => e.type === "lesson").length
+                  )}
                 </p>
               </div>
             </div>
@@ -122,7 +129,9 @@ const StudentCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">الامتحانات</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {currentMonthEvents.filter((e) => e.type === "exam").length}
+                  {toEnglishNumbers(
+                    currentMonthEvents.filter((e) => e.type === "exam").length
+                  )}
                 </p>
               </div>
             </div>
@@ -189,8 +198,14 @@ const StudentCalendar = () => {
                     <div>
                       <p className="font-medium">{event.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(event.date).toLocaleDateString("ar-SA")} •{" "}
-                        {event.startTime}
+                        {(() => {
+                          const date = new Date(event.date);
+                          const day = date.getDate();
+                          const month = date.getMonth() + 1;
+                          const year = date.getFullYear();
+                          return `${day}/${month}/${year}`;
+                        })()}{" "}
+                        • {event.startTime}
                         {event.location && ` • ${event.location}`}
                       </p>
                     </div>

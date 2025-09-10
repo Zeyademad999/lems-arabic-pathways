@@ -1,12 +1,12 @@
-import React from 'react';
-import { LEMSLayout } from '@/components/layout/LEMSLayout';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { 
-  MessageCircle, 
-  Send, 
+import React from "react";
+import { LEMSLayout } from "@/components/layout/LEMSLayout";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  MessageCircle,
+  Send,
   Bot,
   User,
   Mic,
@@ -15,12 +15,12 @@ import {
   HelpCircle,
   BookOpen,
   Clock,
-  Star
-} from 'lucide-react';
+  Star,
+} from "lucide-react";
 
 interface Message {
   id: string;
-  type: 'user' | 'bot';
+  type: "user" | "bot";
   content: string;
   timestamp: string;
   attachments?: string[];
@@ -35,72 +35,94 @@ interface QuickAction {
 
 const mockMessages: Message[] = [
   {
-    id: '1',
-    type: 'bot',
-    content: 'مرحباً أحمد! أنا المساعد الذكي لنظام LEMS. كيف يمكنني مساعدتك اليوم؟',
-    timestamp: '14:30'
+    id: "1",
+    type: "bot",
+    content:
+      "مرحباً أحمد! أنا المساعد الذكي لنظام LEMS. كيف يمكنني مساعدتك اليوم؟",
+    timestamp: "14:30",
   },
   {
-    id: '2',
-    type: 'user',
-    content: 'أريد معرفة مواعيد الواجبات القادمة',
-    timestamp: '14:31'
+    id: "2",
+    type: "user",
+    content: "أريد معرفة مواعيد الواجبات القادمة",
+    timestamp: "14:31",
   },
   {
-    id: '3',
-    type: 'bot',
-    content: 'لديك 3 واجبات قادمة:\n\n1. تقرير عن أنظمة إدارة المخازن - موعد التسليم: 20 يناير\n2. تقييم السلوك المهني الذاتي - موعد التسليم: 25 يناير\n3. مشروع الإكسل العملي - تم إرساله بالفعل\n\nهل تريد تفاصيل أكثر عن أي واجب؟',
-    timestamp: '14:31'
+    id: "3",
+    type: "bot",
+    content:
+      "لديك 3 واجبات قادمة:\n\n1. تقرير عن أنظمة إدارة المخازن - موعد التسليم: 20 يناير\n2. تقييم السلوك المهني الذاتي - موعد التسليم: 25 يناير\n3. مشروع الإكسل العملي - تم إرساله بالفعل\n\nهل تريد تفاصيل أكثر عن أي واجب؟",
+    timestamp: "14:31",
   },
   {
-    id: '4',
-    type: 'user',
-    content: 'نعم، أريد تفاصيل عن تقرير أنظمة إدارة المخازن',
-    timestamp: '14:32'
+    id: "4",
+    type: "user",
+    content: "نعم، أريد تفاصيل عن تقرير أنظمة إدارة المخازن",
+    timestamp: "14:32",
   },
   {
-    id: '5',
-    type: 'bot',
-    content: 'تفاصيل واجب "تقرير عن أنظمة إدارة المخازن":\n\n📚 الكورس: أساسيات اللوجستيات\n📅 موعد التسليم: 20 يناير 2024\n📝 نوع الواجب: تقرير مكتوب\n⏰ الوقت المتبقي: 5 أيام\n\nالمطلوب:\n- كتابة تقرير مفصل عن أنظمة إدارة المخازن الحديثة\n- التركيز على الفوائد في تحسين كفاءة العمليات\n- الحد الأدنى: 1500 كلمة\n- المرفقات المتاحة: requirements.pdf, template.docx\n\nهل تريد تحميل المرفقات أو لديك سؤال آخر؟',
-    timestamp: '14:33'
-  }
+    id: "5",
+    type: "bot",
+    content:
+      'تفاصيل واجب "تقرير عن أنظمة إدارة المخازن":\n\n📚 الكورس: أساسيات اللوجستيات\n📅 موعد التسليم: 20 يناير 2024\n📝 نوع الواجب: تقرير مكتوب\n⏰ الوقت المتبقي: 5 أيام\n\nالمطلوب:\n- كتابة تقرير مفصل عن أنظمة إدارة المخازن الحديثة\n- التركيز على الفوائد في تحسين كفاءة العمليات\n- الحد الأدنى: 1500 كلمة\n- المرفقات المتاحة: requirements.pdf, template.docx\n\nهل تريد تحميل المرفقات أو لديك سؤال آخر؟',
+    timestamp: "14:33",
+  },
 ];
 
 const quickActions: QuickAction[] = [
   {
-    id: '1',
-    label: 'مواعيد الواجبات',
+    id: "1",
+    label: "مواعيد الواجبات",
     icon: Clock,
-    action: 'assignments'
+    action: "assignments",
   },
   {
-    id: '2',
-    label: 'تقدم الكورسات',
+    id: "2",
+    label: "تقدم الكورسات",
     icon: BookOpen,
-    action: 'progress'
+    action: "progress",
   },
   {
-    id: '3',
-    label: 'الدرجات والتقييمات',
+    id: "3",
+    label: "الدرجات والتقييمات",
     icon: Star,
-    action: 'grades'
+    action: "grades",
   },
   {
-    id: '4',
-    label: 'الأسئلة الشائعة',
+    id: "4",
+    label: "الأسئلة الشائعة",
     icon: HelpCircle,
-    action: 'faq'
-  }
+    action: "faq",
+  },
 ];
 
 const Chatbot = () => {
   const [messages, setMessages] = React.useState<Message[]>(mockMessages);
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState("");
   const [isTyping, setIsTyping] = React.useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const formatResponse = (text: string): string => {
+    if (!text) return text;
+
+    // Split by double newlines to preserve paragraph breaks
+    let formatted = text
+      // Handle numbered lists (1. 2. 3. etc.)
+      .replace(/(\d+\.\s+)/g, "\n$1")
+      // Handle bullet points with **
+      .replace(/(\*\*[^*]+\*\*)/g, "\n$1")
+      // Handle questions with ?
+      .replace(/(\?)/g, "$1\n")
+      // Clean up multiple newlines
+      .replace(/\n{3,}/g, "\n\n")
+      // Trim whitespace
+      .trim();
+
+    return formatted;
   };
 
   React.useEffect(() => {
@@ -112,118 +134,88 @@ const Chatbot = () => {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      type: 'user',
+      type: "user",
       content: inputValue,
-      timestamp: new Date().toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' })
+      timestamp: new Date().toLocaleTimeString("ar", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     const currentInput = inputValue;
-    setInputValue('');
+    setInputValue("");
     setIsTyping(true);
 
-    // Simulate more intelligent bot responses
-    setTimeout(() => {
-      let responseContent = '';
-      
-      if (currentInput.includes('واجب') || currentInput.includes('تكليف')) {
-        responseContent = `📚 واجباتك القادمة:
+    try {
+      // Send POST request to the API endpoint
+      const response = await fetch("http://192.168.0.182:8000/api/chat/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: currentInput,
+        }),
+      });
 
-1. **تقرير عن أنظمة إدارة المخازن**
-   📅 التسليم: 20 يناير 2024
-   ⏰ متبقي: 5 أيام
-   📊 الدرجة: 20 درجة
-   
-2. **تقييم السلوك المهني الذاتي**
-   📅 التسليم: 25 يناير 2024
-   ⏰ متبقي: 10 أيام
-   📊 الدرجة: 15 درجة
-
-هل تريد تفاصيل أكثر عن أي واجب محدد؟`;
-      } else if (currentInput.includes('درجة') || currentInput.includes('تقييم')) {
-        responseContent = `🏆 ملخص درجاتك:
-
-**أساسيات اللوجستيات:**
-• اختبار إدارة المخازن: 85/100 ⭐
-• واجب تحليل سلسلة التوريد: 92/100 ⭐⭐
-
-**التدريب السلوكي المهني:**
-• تقييم آداب العمل: 96/100 ⭐⭐⭐
-• مشروع العمل الجماعي: قيد المراجعة
-
-**المتوسط العام:** 91% 🎉
-
-أداؤك ممتاز! استمر في هذا المستوى.`;
-      } else if (currentInput.includes('حضور') || currentInput.includes('جلسة')) {
-        responseContent = `📅 سجل الحضور:
-
-**هذا الأسبوع:**
-• الاثنين: حضور ✅ (09:00-11:30)
-• الثلاثاء: تأخير ⚠️ (تأخر 15 دقيقة)
-• الأربعاء: حضور ✅ (14:00-16:30)
-• الخميس: غياب ❌ (بعذر طبي)
-
-**معدل الحضور:** 85% 📊
-
-**الجلسة القادمة:**
-🕘 غداً - 10:00 صباحاً
-📍 معمل الحاسوب
-📚 تطبيقات الإكسل المتقدمة`;
-      } else if (currentInput.includes('اختبار') || currentInput.includes('امتحان')) {
-        responseContent = `📝 الاختبارات القادمة:
-
-**هذا الأسبوع:**
-• اختبار الدوال الأساسية في الإكسل
-  📅 يوم الأحد - 22 يناير
-  ⏰ المدة: 15 دقيقة
-  📊 10 أسئلة - تدريبي
-  
-**الأسبوع القادم:**
-• تقييم إدارة المخازن المتقدمة
-  📅 الخميس - 25 يناير  
-  ⏰ المدة: 30 دقيقة
-  📊 20 سؤال - تقييمي
-
-هل تريد نصائح للاستعداد للاختبارات؟`;
-      } else {
-        responseContent = `شكراً لسؤالك! 😊
-
-يمكنني مساعدتك في:
-• 📚 الواجبات والمشاريع
-• 🏆 الدرجات والتقييمات
-• 📅 مواعيد الحضور والجلسات
-• 📝 الاختبارات القادمة
-• 📖 محتوى الكورسات
-• ❓ الأسئلة الشائعة
-
-أو جرب الضغط على الأزرار السريعة أعلاه!`;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      const data = await response.json();
+
+      // Format the response text nicely
+      const rawResponse =
+        data.message || data.response || "تم استلام رسالتك بنجاح";
+      const formattedResponse = formatResponse(rawResponse);
+
+      // Use the API response as the bot's message
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        type: 'bot',
-        content: responseContent,
-        timestamp: new Date().toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' })
+        type: "bot",
+        content: formattedResponse,
+        timestamp: new Date().toLocaleTimeString("ar", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       };
-      setMessages(prev => [...prev, botResponse]);
+
+      setMessages((prev) => [...prev, botResponse]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+
+      // Fallback response in case of API error
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "bot",
+        content: "عذراً، حدث خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.",
+        timestamp: new Date().toLocaleTimeString("ar", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      };
+
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500 + Math.random() * 1000);
+    }
   };
 
   const handleQuickAction = (action: string) => {
-    let message = '';
+    let message = "";
     switch (action) {
-      case 'assignments':
-        message = 'أريد معرفة مواعيد الواجبات القادمة';
+      case "assignments":
+        message = "أريد معرفة مواعيد الواجبات القادمة";
         break;
-      case 'progress':
-        message = 'كيف يمكنني متابعة تقدمي في الكورسات؟';
+      case "progress":
+        message = "كيف يمكنني متابعة تقدمي في الكورسات؟";
         break;
-      case 'grades':
-        message = 'أريد مراجعة درجاتي وتقييماتي';
+      case "grades":
+        message = "أريد مراجعة درجاتي وتقييماتي";
         break;
-      case 'faq':
-        message = 'ما هي الأسئلة الشائعة؟';
+      case "faq":
+        message = "ما هي الأسئلة الشائعة؟";
         break;
       default:
         message = action;
@@ -232,7 +224,7 @@ const Chatbot = () => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -248,7 +240,9 @@ const Chatbot = () => {
               <Bot className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-education-primary">المساعد الذكي</h1>
+              <h1 className="text-xl font-bold text-education-primary">
+                المساعد الذكي
+              </h1>
               <p className="text-sm text-success flex items-center gap-1">
                 <div className="w-2 h-2 bg-success rounded-full"></div>
                 متصل
@@ -284,32 +278,38 @@ const Chatbot = () => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-3 ${
+                  message.type === "user" ? "justify-end" : "justify-start"
+                }`}
               >
-                {message.type === 'bot' && (
+                {message.type === "bot" && (
                   <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
                     <Bot className="h-4 w-4" />
                   </div>
                 )}
-                
+
                 <div
                   className={`max-w-[70%] rounded-lg p-3 ${
-                    message.type === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
+                    message.type === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-line">
                     {message.content}
                   </p>
-                  <p className={`text-xs mt-2 ${
-                    message.type === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                  }`}>
+                  <p
+                    className={`text-xs mt-2 ${
+                      message.type === "user"
+                        ? "text-primary-foreground/70"
+                        : "text-muted-foreground"
+                    }`}
+                  >
                     {message.timestamp}
                   </p>
                 </div>
 
-                {message.type === 'user' && (
+                {message.type === "user" && (
                   <div className="w-8 h-8 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center shrink-0">
                     <User className="h-4 w-4" />
                   </div>
@@ -325,13 +325,19 @@ const Chatbot = () => {
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex gap-1">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div
+                      className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
 
@@ -353,7 +359,7 @@ const Chatbot = () => {
                   className="lems-input pl-12"
                 />
               </div>
-              <Button 
+              <Button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
                 className="lems-button-primary"
@@ -373,7 +379,9 @@ const Chatbot = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="space-y-2">
-                <Badge variant="outline" className="text-xs">أسئلة مفيدة</Badge>
+                <Badge variant="outline" className="text-xs">
+                  أسئلة مفيدة
+                </Badge>
                 <ul className="space-y-1 text-muted-foreground">
                   <li>• "ما هي واجباتي القادمة؟"</li>
                   <li>• "كيف أحسن درجاتي؟"</li>
@@ -382,7 +390,9 @@ const Chatbot = () => {
                 </ul>
               </div>
               <div className="space-y-2">
-                <Badge variant="outline" className="text-xs">ميزات متقدمة</Badge>
+                <Badge variant="outline" className="text-xs">
+                  ميزات متقدمة
+                </Badge>
                 <ul className="space-y-1 text-muted-foreground">
                   <li>• يمكنك إرسال الملفات والصور</li>
                   <li>• استخدم الرسائل الصوتية</li>
@@ -391,7 +401,9 @@ const Chatbot = () => {
                 </ul>
               </div>
               <div className="space-y-2">
-                <Badge variant="outline" className="text-xs">مساعدة فورية</Badge>
+                <Badge variant="outline" className="text-xs">
+                  مساعدة فورية
+                </Badge>
                 <ul className="space-y-1 text-muted-foreground">
                   <li>• إرشادات تقنية للمنصة</li>
                   <li>• حل مشاكل تسجيل الدخول</li>
@@ -411,10 +423,11 @@ const Chatbot = () => {
               <h3 className="font-semibold">عن المساعد الذكي</h3>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              هذا المساعد الذكي يستخدم تقنيات الذكاء الاصطناعي لمساعدتك في رحلتك التعليمية. 
-              يمكنه الإجابة على استفساراتك، تقديم النصائح، ومساعدتك في تتبع تقدمك الأكاديمي بشكل مستمر.
+              هذا المساعد الذكي يستخدم تقنيات الذكاء الاصطناعي لمساعدتك في رحلتك
+              التعليمية. يمكنه الإجابة على استفساراتك، تقديم النصائح، ومساعدتك
+              في تتبع تقدمك الأكاديمي بشكل مستمر.
             </p>
-            
+
             <div className="flex items-center justify-between pt-2">
               <div className="text-xs text-muted-foreground">
                 آخر تحديث: يناير 2024

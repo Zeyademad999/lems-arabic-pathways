@@ -226,7 +226,13 @@ const PlagiarismCheckerPage = () => {
                     <div className="text-right">
                       <p className="text-sm font-medium">{check.similarity}%</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(check.timestamp).toLocaleDateString("ar-SA")}
+                        {(() => {
+                          const date = new Date(check.timestamp);
+                          const day = date.getDate();
+                          const month = date.getMonth() + 1;
+                          const year = date.getFullYear();
+                          return `${day}/${month}/${year}`;
+                        })()}
                       </p>
                     </div>
                     <Badge variant={getRiskBadge(check.status)}>

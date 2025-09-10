@@ -32,6 +32,11 @@ const InstructorCalendar = () => {
   const [isEventModalOpen, setIsEventModalOpen] = React.useState(false);
   const [isAddEventModalOpen, setIsAddEventModalOpen] = React.useState(false);
 
+  // Convert Arabic numerals to English
+  const toEnglishNumbers = (num: number): string => {
+    return num.toString();
+  };
+
   const upcomingEvents = getUpcomingEvents(7);
   const currentMonthEvents = getEventsForMonth(
     currentDate.getFullYear(),
@@ -95,7 +100,7 @@ const InstructorCalendar = () => {
                 </p>
               </div>
             </div>
-            <Button 
+            <Button
               className="lems-button-primary flex items-center gap-2"
               onClick={() => setIsAddEventModalOpen(true)}
             >
@@ -115,7 +120,7 @@ const InstructorCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">إجمالي الأحداث</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {instructorStats.totalEvents}
+                  {toEnglishNumbers(instructorStats.totalEvents)}
                 </p>
               </div>
             </div>
@@ -129,7 +134,7 @@ const InstructorCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">الدروس</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {instructorStats.lessons}
+                  {toEnglishNumbers(instructorStats.lessons)}
                 </p>
               </div>
             </div>
@@ -143,7 +148,7 @@ const InstructorCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">الامتحانات</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {instructorStats.exams}
+                  {toEnglishNumbers(instructorStats.exams)}
                 </p>
               </div>
             </div>
@@ -157,7 +162,7 @@ const InstructorCalendar = () => {
               <div>
                 <p className="text-sm text-muted-foreground">الاجتماعات</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {instructorStats.meetings}
+                  {toEnglishNumbers(instructorStats.meetings)}
                 </p>
               </div>
             </div>
@@ -251,8 +256,14 @@ const InstructorCalendar = () => {
                     <div>
                       <p className="font-medium">{event.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(event.date).toLocaleDateString("ar-SA")} •{" "}
-                        {event.startTime}
+                        {(() => {
+                          const date = new Date(event.date);
+                          const day = date.getDate();
+                          const month = date.getMonth() + 1;
+                          const year = date.getFullYear();
+                          return `${day}/${month}/${year}`;
+                        })()}{" "}
+                        • {event.startTime}
                         {event.location && ` • ${event.location}`}
                         {event.courseName && ` • ${event.courseName}`}
                       </p>

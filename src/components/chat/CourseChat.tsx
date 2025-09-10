@@ -434,7 +434,10 @@ export const CourseChat: React.FC<CourseChatProps> = ({
     } else if (date.toDateString() === yesterday.toDateString()) {
       return "أمس";
     } else {
-      return date.toLocaleDateString("ar-SA");
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     }
   };
 

@@ -71,6 +71,11 @@ export const Calendar: React.FC<CalendarProps> = ({
     onDateChange(new Date());
   };
 
+  // Convert Arabic numerals to English
+  const toEnglishNumbers = (num: number): string => {
+    return num.toString();
+  };
+
   // Generate calendar days
   const generateCalendarDays = () => {
     const days = [];
@@ -89,7 +94,7 @@ export const Calendar: React.FC<CalendarProps> = ({
       const isToday = date.toDateString() === today.toDateString();
 
       days.push({
-        day,
+        day: toEnglishNumbers(day),
         date: dateString,
         isToday,
         events,
@@ -129,7 +134,7 @@ export const Calendar: React.FC<CalendarProps> = ({
           <div className="flex items-center gap-4">
             <CalendarIcon className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold text-foreground">
-              {getMonthName(currentMonth)} {currentYear}
+              {getMonthName(currentMonth)} {toEnglishNumbers(currentYear)}
             </h2>
           </div>
 
@@ -226,7 +231,7 @@ export const Calendar: React.FC<CalendarProps> = ({
                     ))}
                     {events.length > 2 && (
                       <div className="text-xs text-muted-foreground text-center">
-                        +{events.length - 2} أكثر
+                        +{toEnglishNumbers(events.length - 2)} أكثر
                       </div>
                     )}
                   </div>

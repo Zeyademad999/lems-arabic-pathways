@@ -22,7 +22,14 @@ import {
   Percent,
   Calendar,
   User,
+  HelpCircle,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PlagiarismResult {
   id: string;
@@ -193,10 +200,44 @@ export const PlagiarismChecker: React.FC<PlagiarismCheckerProps> = ({
         <div className="p-2 bg-primary/10 rounded-lg">
           <Shield className="h-6 w-6 text-primary" />
         </div>
-        <div>
-          <h2 className="text-2xl font-bold text-education-primary">
-            فحص الانتحال
-          </h2>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-education-primary">
+              فحص الانتحال
+            </h2>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="left"
+                  className="max-w-sm bg-black text-white border-black"
+                >
+                  <div className="space-y-2 text-sm">
+                    <p className="font-semibold text-white">
+                      أداة فحص الانتحال
+                    </p>
+                    <p className="text-white">
+                      يمكنك فحص النصوص بطريقتين: إدخال النص مباشرة أو رفع ملف.
+                      الأداة ستقارن المحتوى مع قاعدة بيانات ضخمة وتوفر تقرير
+                      مفصل عن نسبة التشابه.
+                    </p>
+                    <p className="font-semibold mt-2 text-white">الميزات:</p>
+                    <ul className="list-disc list-inside space-y-1 text-xs text-white">
+                      <li>فحص النصوص المباشرة</li>
+                      <li>رفع ملفات PDF, Word, TXT</li>
+                      <li>تقرير مفصل مع المصادر</li>
+                      <li>نسبة التشابه الدقيقة</li>
+                      <li>تحديد النصوص المطابقة</li>
+                    </ul>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <p className="text-muted-foreground">
             تحقق من أصالة النصوص والواجبات المقدمة
           </p>

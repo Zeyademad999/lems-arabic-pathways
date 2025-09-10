@@ -13,7 +13,14 @@ import {
   CheckCircle,
   AlertTriangle,
   BarChart3,
+  HelpCircle,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PlagiarismStats {
   totalChecks: number;
@@ -122,10 +129,61 @@ const PlagiarismCheckerPage = () => {
             <div className="p-2 bg-primary/10 rounded-lg">
               <Shield className="h-6 w-6 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-education-primary">
-                فحص الانتحال
-              </h1>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-education-primary">
+                  فحص الانتحال
+                </h1>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="left"
+                      className="max-w-sm bg-black text-white border-black"
+                    >
+                      <div className="space-y-2 text-sm">
+                        <p className="font-semibold text-white">
+                          ما هو فحص الانتحال؟
+                        </p>
+                        <p className="text-white">
+                          أداة ذكية تفحص الواجبات والبحوث المقدمة من الطلاب
+                          للكشف عن أي محتوى منسوخ أو مستعار من مصادر أخرى.
+                        </p>
+                        <p className="font-semibold mt-2 text-white">
+                          كيف يعمل؟
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 text-xs text-white">
+                          <li>يقارن النص مع قاعدة بيانات ضخمة من المصادر</li>
+                          <li>يحسب نسبة التشابه ويحدد مستوى الخطر</li>
+                          <li>يوفر تقرير مفصل مع المصادر المطابقة</li>
+                          <li>يساعد في ضمان الأصالة والأمانة الأكاديمية</li>
+                        </ul>
+                        <p className="font-semibold mt-2 text-white">
+                          مستويات الخطر:
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 text-xs text-white">
+                          <li>
+                            <span className="text-red-400">●</span> خطر عالي
+                            (70%+): مراجعة فورية
+                          </li>
+                          <li>
+                            <span className="text-yellow-400">●</span> خطر متوسط
+                            (40-69%): مراجعة إضافية
+                          </li>
+                          <li>
+                            <span className="text-green-400">●</span> خطر منخفض
+                            (أقل من 40%): مقبول
+                          </li>
+                        </ul>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <p className="text-muted-foreground">
                 تحقق من أصالة الواجبات والبحوث المقدمة من الطلاب
               </p>

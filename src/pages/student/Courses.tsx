@@ -1,14 +1,16 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LEMSLayout } from '@/components/layout/LEMSLayout';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  BookOpen, 
-  PlayCircle, 
-  FileText, 
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { LEMSLayout } from "@/components/layout/LEMSLayout";
+import { useSignOut } from "@/hooks/useSignOut";
+import { getQuizScenario, getQuizStatus } from "@/lib/quizScenarios";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  BookOpen,
+  PlayCircle,
+  FileText,
   Upload,
   Clock,
   CheckCircle2,
@@ -19,13 +21,15 @@ import {
   Download,
   Eye,
   ChevronDown,
-  ChevronRight
-} from 'lucide-react';
+  ChevronRight,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 interface Lesson {
   id: string;
   title: string;
-  type: 'powerpoint' | 'pdf' | 'video' | 'document';
+  type: "powerpoint" | "pdf" | "video" | "document";
   duration: number;
   completed: boolean;
   attachments: string[];
@@ -39,7 +43,7 @@ interface Assignment {
   submitted: boolean;
   grade?: number;
   maxGrade: number;
-  submissionType: 'file' | 'text' | 'both';
+  submissionType: "file" | "text" | "both";
 }
 
 interface Quiz {
@@ -71,7 +75,7 @@ interface Course {
   instructor: string;
   duration: string;
   progress: number;
-  status: 'active' | 'completed' | 'locked';
+  status: "active" | "completed" | "locked";
   sections: CourseSection[];
   learningOutcomes: string[];
   requirements: string[];
@@ -80,208 +84,212 @@ interface Course {
 
 const mockCourses: Course[] = [
   {
-    id: '1',
-    title: 'أساسيات اللوجستيات',
-    description: 'تعلم المفاهيم الأساسية في إدارة اللوجستيات وسلسلة التوريد',
-    instructor: 'د. محمد أحمد',
-    duration: '6 أسابيع | 40 ساعة',
+    id: "1",
+    title: "أساسيات اللوجستيات",
+    description: "تعلم المفاهيم الأساسية في إدارة اللوجستيات وسلسلة التوريد",
+    instructor: "د. محمد أحمد",
+    duration: "6 أسابيع | 40 ساعة",
     progress: 65,
-    status: 'active',
-    enrolledDate: '2024-01-01',
+    status: "active",
+    enrolledDate: "2024-01-01",
     learningOutcomes: [
-      'فهم مبادئ إدارة المخازن',
-      'تطبيق أنظمة النقل والتوزيع',
-      'إدارة المخزون بكفاءة',
-      'تحليل سلسلة التوريد'
+      "فهم مبادئ إدارة المخازن",
+      "تطبيق أنظمة النقل والتوزيع",
+      "إدارة المخزون بكفاءة",
+      "تحليل سلسلة التوريد",
     ],
     requirements: [
-      'الحد الأدنى للعمر: 18 سنة',
-      'معرفة أساسية بالحاسوب',
-      'إجادة القراءة والكتابة'
+      "الحد الأدنى للعمر: 18 سنة",
+      "معرفة أساسية بالحاسوب",
+      "إجادة القراءة والكتابة",
     ],
     sections: [
       {
-        id: '1',
-        title: 'مقدمة في اللوجستيات',
-        description: 'التعريف بعلم اللوجستيات وأهميته',
+        id: "1",
+        title: "مقدمة في اللوجستيات",
+        description: "التعريف بعلم اللوجستيات وأهميته",
         progress: 100,
         unlocked: true,
         lessons: [
           {
-            id: '1',
-            title: 'ما هي اللوجستيات؟',
-            type: 'powerpoint',
+            id: "1",
+            title: "ما هي اللوجستيات؟",
+            type: "powerpoint",
             duration: 45,
             completed: true,
-            attachments: ['intro-logistics.pptx', 'notes.pdf']
+            attachments: ["intro-logistics.pptx", "notes.pdf"],
           },
           {
-            id: '2',
-            title: 'تاريخ وتطور اللوجستيات',
-            type: 'pdf',
+            id: "2",
+            title: "تاريخ وتطور اللوجستيات",
+            type: "pdf",
             duration: 30,
             completed: true,
-            attachments: ['history.pdf']
-          }
+            attachments: ["history.pdf"],
+          },
         ],
         assignments: [
           {
-            id: '1',
-            title: 'تقرير عن أهمية اللوجستيات',
-            description: 'اكتب تقريراً مختصراً عن أهمية اللوجستيات في الاقتصاد الحديث',
-            dueDate: '2024-01-15',
+            id: "1",
+            title: "تقرير عن أهمية اللوجستيات",
+            description:
+              "اكتب تقريراً مختصراً عن أهمية اللوجستيات في الاقتصاد الحديث",
+            dueDate: "2024-01-15",
             submitted: true,
             grade: 85,
             maxGrade: 100,
-            submissionType: 'file'
-          }
+            submissionType: "file",
+          },
         ],
         quizzes: [
           {
-            id: '1',
-            title: 'اختبار المقدمة',
+            id: "1",
+            title: "اختبار المقدمة",
             questions: 10,
             duration: 15,
             attempts: 1,
             maxAttempts: 3,
             bestScore: 90,
-            completed: true
-          }
-        ]
+            completed: true,
+          },
+        ],
       },
       {
-        id: '2',
-        title: 'إدارة المخازن',
-        description: 'أسس ومبادئ إدارة المخازن الحديثة',
+        id: "2",
+        title: "إدارة المخازن",
+        description: "أسس ومبادئ إدارة المخازن الحديثة",
         progress: 45,
         unlocked: true,
         lessons: [
           {
-            id: '3',
-            title: 'أنواع المخازن',
-            type: 'powerpoint',
+            id: "3",
+            title: "أنواع المخازن",
+            type: "powerpoint",
             duration: 50,
             completed: true,
-            attachments: ['warehouse-types.pptx']
+            attachments: ["warehouse-types.pptx"],
           },
           {
-            id: '4',
-            title: 'تخطيط المخازن',
-            type: 'video',
+            id: "4",
+            title: "تخطيط المخازن",
+            type: "video",
             duration: 60,
             completed: false,
-            attachments: ['planning-video.mp4', 'worksheet.pdf']
-          }
+            attachments: ["planning-video.mp4", "worksheet.pdf"],
+          },
         ],
         assignments: [
           {
-            id: '2',
-            title: 'تصميم مخزن',
-            description: 'صمم مخطط لمخزن صغير مع تحديد المناطق المختلفة',
-            dueDate: '2024-01-25',
+            id: "2",
+            title: "تصميم مخزن",
+            description: "صمم مخطط لمخزن صغير مع تحديد المناطق المختلفة",
+            dueDate: "2024-01-25",
             submitted: false,
             maxGrade: 100,
-            submissionType: 'both'
-          }
+            submissionType: "both",
+          },
         ],
         quizzes: [
           {
-            id: '2',
-            title: 'اختبار إدارة المخازن',
+            id: "2",
+            title: "اختبار إدارة المخازن",
             questions: 15,
             duration: 20,
             attempts: 0,
             maxAttempts: 3,
-            completed: false
-          }
-        ]
+            completed: false,
+          },
+        ],
       },
       {
-        id: '3',
-        title: 'النقل والتوزيع',
-        description: 'أنظمة النقل ووسائل التوزيع',
+        id: "3",
+        title: "النقل والتوزيع",
+        description: "أنظمة النقل ووسائل التوزيع",
         progress: 0,
         unlocked: false,
         lessons: [
           {
-            id: '5',
-            title: 'وسائل النقل',
-            type: 'powerpoint',
+            id: "5",
+            title: "وسائل النقل",
+            type: "powerpoint",
             duration: 40,
             completed: false,
-            attachments: []
-          }
+            attachments: [],
+          },
         ],
         assignments: [],
-        quizzes: []
-      }
-    ]
+        quizzes: [],
+      },
+    ],
   },
   {
-    id: '2',
-    title: 'التدريب السلوكي المهني',
-    description: 'تطوير المهارات السلوكية والمهنية في بيئة العمل',
-    instructor: 'أ. فاطمة علي',
-    duration: '4 أسابيع | 25 ساعة',
+    id: "2",
+    title: "التدريب السلوكي المهني",
+    description: "تطوير المهارات السلوكية والمهنية في بيئة العمل",
+    instructor: "أ. فاطمة علي",
+    duration: "4 أسابيع | 25 ساعة",
     progress: 80,
-    status: 'active',
-    enrolledDate: '2024-01-08',
+    status: "active",
+    enrolledDate: "2024-01-08",
     learningOutcomes: [
-      'آداب التعامل في العمل',
-      'مهارات التواصل الفعال',
-      'العمل الجماعي',
-      'الانضباط المهني'
+      "آداب التعامل في العمل",
+      "مهارات التواصل الفعال",
+      "العمل الجماعي",
+      "الانضباط المهني",
     ],
-    requirements: [
-      'لا توجد متطلبات خاصة'
-    ],
+    requirements: ["لا توجد متطلبات خاصة"],
     sections: [
       {
-        id: '4',
-        title: 'آداب العمل',
-        description: 'تعلم الآداب الأساسية في بيئة العمل',
+        id: "4",
+        title: "آداب العمل",
+        description: "تعلم الآداب الأساسية في بيئة العمل",
         progress: 100,
         unlocked: true,
         lessons: [
           {
-            id: '6',
-            title: 'الحضور والالتزام',
-            type: 'powerpoint',
+            id: "6",
+            title: "الحضور والالتزام",
+            type: "powerpoint",
             duration: 35,
             completed: true,
-            attachments: ['attendance.pptx']
-          }
+            attachments: ["attendance.pptx"],
+          },
         ],
         assignments: [],
         quizzes: [
           {
-            id: '3',
-            title: 'اختبار آداب العمل',
+            id: "3",
+            title: "اختبار آداب العمل",
             questions: 12,
             duration: 15,
             attempts: 1,
             maxAttempts: 2,
             bestScore: 95,
-            completed: true
-          }
-        ]
-      }
-    ]
-  }
+            completed: true,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const Courses = () => {
   const navigate = useNavigate();
-  const [expandedCourse, setExpandedCourse] = React.useState<string | null>(null);
-  const [expandedSection, setExpandedSection] = React.useState<string | null>(null);
+  const { signOut } = useSignOut();
+  const [expandedCourse, setExpandedCourse] = React.useState<string | null>(
+    null
+  );
+  const [expandedSection, setExpandedSection] = React.useState<string | null>(
+    null
+  );
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <Badge className="lems-badge-success">نشط</Badge>;
-      case 'completed':
+      case "completed":
         return <Badge className="lems-badge-success">مكتمل</Badge>;
-      case 'locked':
+      case "locked":
         return <Badge className="lems-badge-locked">مقفل</Badge>;
       default:
         return null;
@@ -290,11 +298,11 @@ const Courses = () => {
 
   const getLessonIcon = (type: string) => {
     switch (type) {
-      case 'powerpoint':
+      case "powerpoint":
         return <FileText className="h-4 w-4" />;
-      case 'pdf':
+      case "pdf":
         return <FileText className="h-4 w-4" />;
-      case 'video':
+      case "video":
         return <PlayCircle className="h-4 w-4" />;
       default:
         return <BookOpen className="h-4 w-4" />;
@@ -302,7 +310,7 @@ const Courses = () => {
   };
 
   return (
-    <LEMSLayout userRole="student">
+    <LEMSLayout userRole="student" onSignOut={signOut}>
       <div className="space-y-6">
         {/* Page Header */}
         <div className="space-y-4">
@@ -333,7 +341,13 @@ const Courses = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {Math.round(mockCourses.reduce((sum, course) => sum + course.progress, 0) / mockCourses.length)}%
+                  {Math.round(
+                    mockCourses.reduce(
+                      (sum, course) => sum + course.progress,
+                      0
+                    ) / mockCourses.length
+                  )}
+                  %
                 </p>
                 <p className="text-sm text-muted-foreground">متوسط التقدم</p>
               </div>
@@ -347,7 +361,7 @@ const Courses = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {mockCourses.filter(c => c.status === 'active').length}
+                  {mockCourses.filter((c) => c.status === "active").length}
                 </p>
                 <p className="text-sm text-muted-foreground">كورسات نشطة</p>
               </div>
@@ -369,9 +383,11 @@ const Courses = () => {
                       </h3>
                       {getStatusBadge(course.status)}
                     </div>
-                    
-                    <p className="text-muted-foreground">{course.description}</p>
-                    
+
+                    <p className="text-muted-foreground">
+                      {course.description}
+                    </p>
+
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4" />
@@ -396,19 +412,23 @@ const Courses = () => {
                       <Progress value={course.progress} className="h-2" />
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button
                       className="lems-button-primary"
-                      onClick={() => navigate(`/courses/${course.id}`)}
+                      onClick={() => navigate(`/student/courses/${course.id}`)}
                     >
                       <Eye className="h-4 w-4 ml-2" />
                       دخول الكورس
                     </Button>
-                    
+
                     <Button
                       variant="outline"
-                      onClick={() => setExpandedCourse(expandedCourse === course.id ? null : course.id)}
+                      onClick={() =>
+                        setExpandedCourse(
+                          expandedCourse === course.id ? null : course.id
+                        )
+                      }
                       className="flex items-center gap-2"
                     >
                       {expandedCourse === course.id ? (
@@ -435,19 +455,25 @@ const Courses = () => {
                         <h4 className="font-semibold mb-3">مخرجات التعلم</h4>
                         <ul className="space-y-2">
                           {course.learningOutcomes.map((outcome, index) => (
-                            <li key={index} className="flex items-start gap-2 text-sm">
+                            <li
+                              key={index}
+                              className="flex items-start gap-2 text-sm"
+                            >
                               <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
                               <span>{outcome}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
-                      
+
                       <div>
                         <h4 className="font-semibold mb-3">المتطلبات</h4>
                         <ul className="space-y-2">
                           {course.requirements.map((requirement, index) => (
-                            <li key={index} className="flex items-start gap-2 text-sm">
+                            <li
+                              key={index}
+                              className="flex items-start gap-2 text-sm"
+                            >
                               <Target className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                               <span>{requirement}</span>
                             </li>
@@ -459,9 +485,16 @@ const Courses = () => {
                     {/* Course Sections */}
                     <div className="space-y-4">
                       <h4 className="font-semibold">أقسام الكورس</h4>
-                      
+
                       {course.sections.map((section) => (
-                        <Card key={section.id} className={`border ${section.unlocked ? 'border-border' : 'border-muted bg-muted/20'}`}>
+                        <Card
+                          key={section.id}
+                          className={`border ${
+                            section.unlocked
+                              ? "border-border"
+                              : "border-muted bg-muted/20"
+                          }`}
+                        >
                           <div className="space-y-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
@@ -471,22 +504,36 @@ const Courses = () => {
                                   <Lock className="h-5 w-5 text-muted-foreground" />
                                 )}
                                 <div>
-                                  <h5 className="font-semibold">{section.title}</h5>
-                                  <p className="text-sm text-muted-foreground">{section.description}</p>
+                                  <h5 className="font-semibold">
+                                    {section.title}
+                                  </h5>
+                                  <p className="text-sm text-muted-foreground">
+                                    {section.description}
+                                  </p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex items-center gap-4">
                                 <div className="text-center">
-                                  <p className="text-sm font-medium">{section.progress}%</p>
-                                  <p className="text-xs text-muted-foreground">مكتمل</p>
+                                  <p className="text-sm font-medium">
+                                    {section.progress}%
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    مكتمل
+                                  </p>
                                 </div>
-                                
+
                                 {section.unlocked && (
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
+                                    onClick={() =>
+                                      setExpandedSection(
+                                        expandedSection === section.id
+                                          ? null
+                                          : section.id
+                                      )
+                                    }
                                   >
                                     {expandedSection === section.id ? (
                                       <ChevronDown className="h-4 w-4" />
@@ -499,119 +546,277 @@ const Courses = () => {
                             </div>
 
                             {/* Section Content */}
-                            {expandedSection === section.id && section.unlocked && (
-                              <div className="space-y-4 pt-4 border-t border-border">
-                                {/* Lessons */}
-                                {section.lessons.length > 0 && (
-                                  <div>
-                                    <h6 className="font-medium mb-3 flex items-center gap-2">
-                                      <BookOpen className="h-4 w-4" />
-                                      الدروس ({section.lessons.length})
-                                    </h6>
-                                    <div className="space-y-2">
-                                      {section.lessons.map((lesson) => (
-                                        <div key={lesson.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-                                          <div className="flex items-center gap-3">
-                                            {lesson.completed ? (
-                                              <CheckCircle2 className="h-4 w-4 text-success" />
-                                            ) : (
-                                              getLessonIcon(lesson.type)
-                                            )}
-                                            <div>
-                                              <p className="font-medium text-sm">{lesson.title}</p>
-                                              <p className="text-xs text-muted-foreground">{lesson.duration} دقيقة</p>
+                            {expandedSection === section.id &&
+                              section.unlocked && (
+                                <div className="space-y-4 pt-4 border-t border-border">
+                                  {/* Lessons */}
+                                  {section.lessons.length > 0 && (
+                                    <div>
+                                      <h6 className="font-medium mb-3 flex items-center gap-2">
+                                        <BookOpen className="h-4 w-4" />
+                                        الدروس ({section.lessons.length})
+                                      </h6>
+                                      <div className="space-y-2">
+                                        {section.lessons.map((lesson) => (
+                                          <div
+                                            key={lesson.id}
+                                            className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
+                                          >
+                                            <div className="flex items-center gap-3">
+                                              {lesson.completed ? (
+                                                <CheckCircle2 className="h-4 w-4 text-success" />
+                                              ) : (
+                                                getLessonIcon(lesson.type)
+                                              )}
+                                              <div>
+                                                <p className="font-medium text-sm">
+                                                  {lesson.title}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                  {lesson.duration} دقيقة
+                                                </p>
+                                              </div>
                                             </div>
-                                          </div>
-                                          
-                                          <div className="flex items-center gap-2">
-                                            {lesson.attachments.length > 0 && (
-                                              <Button size="sm" variant="outline">
-                                                <Download className="h-3 w-3 ml-1" />
-                                                المرفقات
+
+                                            <div className="flex items-center gap-2">
+                                              {lesson.attachments.length >
+                                                0 && (
+                                                <Button
+                                                  size="sm"
+                                                  variant="outline"
+                                                >
+                                                  <Download className="h-3 w-3 ml-1" />
+                                                  المرفقات
+                                                </Button>
+                                              )}
+                                              <Button
+                                                size="sm"
+                                                className="lems-button-primary"
+                                              >
+                                                <Eye className="h-3 w-3 ml-1" />
+                                                {lesson.completed
+                                                  ? "مراجعة"
+                                                  : "بدء"}
                                               </Button>
-                                            )}
-                                            <Button size="sm" className="lems-button-primary">
-                                              <Eye className="h-3 w-3 ml-1" />
-                                              {lesson.completed ? 'مراجعة' : 'بدء'}
-                                            </Button>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Assignments */}
-                                {section.assignments.length > 0 && (
-                                  <div>
-                                    <h6 className="font-medium mb-3 flex items-center gap-2">
-                                      <Upload className="h-4 w-4" />
-                                      الواجبات ({section.assignments.length})
-                                    </h6>
-                                    <div className="space-y-2">
-                                      {section.assignments.map((assignment) => (
-                                        <div key={assignment.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-                                          <div className="flex items-center gap-3">
-                                            {assignment.submitted ? (
-                                              <CheckCircle2 className="h-4 w-4 text-success" />
-                                            ) : (
-                                              <Upload className="h-4 w-4 text-warning" />
-                                            )}
-                                            <div>
-                                              <p className="font-medium text-sm">{assignment.title}</p>
-                                              <p className="text-xs text-muted-foreground">موعد التسليم: {assignment.dueDate}</p>
-                                              {assignment.grade && (
-                                                <p className="text-xs text-success">الدرجة: {assignment.grade}/{assignment.maxGrade}</p>
-                                              )}
                                             </div>
                                           </div>
-                                          
-                                          <Button size="sm" className="lems-button-primary">
-                                            {assignment.submitted ? 'عرض التفاصيل' : 'إرسال الحل'}
-                                          </Button>
-                                        </div>
-                                      ))}
+                                        ))}
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
 
-                                {/* Quizzes */}
-                                {section.quizzes.length > 0 && (
-                                  <div>
-                                    <h6 className="font-medium mb-3 flex items-center gap-2">
-                                      <FileText className="h-4 w-4" />
-                                      الاختبارات ({section.quizzes.length})
-                                    </h6>
-                                    <div className="space-y-2">
-                                      {section.quizzes.map((quiz) => (
-                                        <div key={quiz.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-                                          <div className="flex items-center gap-3">
-                                            {quiz.completed ? (
-                                              <CheckCircle2 className="h-4 w-4 text-success" />
-                                            ) : (
-                                              <FileText className="h-4 w-4 text-primary" />
-                                            )}
-                                            <div>
-                                              <p className="font-medium text-sm">{quiz.title}</p>
-                                              <p className="text-xs text-muted-foreground">
-                                                {quiz.questions} سؤال • {quiz.duration} دقيقة
-                                              </p>
-                                              {quiz.bestScore && (
-                                                <p className="text-xs text-success">أفضل درجة: {quiz.bestScore}%</p>
-                                              )}
+                                  {/* Assignments */}
+                                  {section.assignments.length > 0 && (
+                                    <div>
+                                      <h6 className="font-medium mb-3 flex items-center gap-2">
+                                        <Upload className="h-4 w-4" />
+                                        الواجبات ({section.assignments.length})
+                                      </h6>
+                                      <div className="space-y-2">
+                                        {section.assignments.map(
+                                          (assignment) => (
+                                            <div
+                                              key={assignment.id}
+                                              className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
+                                            >
+                                              <div className="flex items-center gap-3">
+                                                {assignment.submitted ? (
+                                                  <CheckCircle2 className="h-4 w-4 text-success" />
+                                                ) : (
+                                                  <Upload className="h-4 w-4 text-warning" />
+                                                )}
+                                                <div>
+                                                  <p className="font-medium text-sm">
+                                                    {assignment.title}
+                                                  </p>
+                                                  <p className="text-xs text-muted-foreground">
+                                                    موعد التسليم:{" "}
+                                                    {assignment.dueDate}
+                                                  </p>
+                                                  {assignment.grade && (
+                                                    <p className="text-xs text-success">
+                                                      الدرجة: {assignment.grade}
+                                                      /{assignment.maxGrade}
+                                                    </p>
+                                                  )}
+                                                </div>
+                                              </div>
+
+                                              <Button
+                                                size="sm"
+                                                className="lems-button-primary"
+                                              >
+                                                {assignment.submitted
+                                                  ? "عرض التفاصيل"
+                                                  : "إرسال الحل"}
+                                              </Button>
                                             </div>
-                                          </div>
-                                          
-                                          <Button size="sm" className="lems-button-primary">
-                                            {quiz.completed ? 'عرض النتائج' : 'بدء الاختبار'}
-                                          </Button>
-                                        </div>
-                                      ))}
+                                          )
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                                  )}
+
+                                  {/* Quizzes */}
+                                  {section.quizzes.length > 0 && (
+                                    <div>
+                                      <h6 className="font-medium mb-3 flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        الاختبارات ({section.quizzes.length})
+                                      </h6>
+                                      <div className="space-y-2">
+                                        {section.quizzes.map((quiz) => {
+                                          // Get quiz scenario data
+                                          const quizScenario = getQuizScenario(
+                                            quiz.id
+                                          );
+                                          const quizStatus = getQuizStatus(
+                                            quiz.id
+                                          );
+                                          const latestAttempt =
+                                            quizScenario?.attempts[
+                                              quizScenario.attempts.length - 1
+                                            ];
+
+                                          const getQuizStatusIcon = () => {
+                                            if (quizStatus === "passed") {
+                                              return (
+                                                <CheckCircle2 className="h-4 w-4 text-success" />
+                                              );
+                                            } else if (
+                                              quizStatus ===
+                                              "max-attempts-reached"
+                                            ) {
+                                              return (
+                                                <XCircle className="h-4 w-4 text-red-500" />
+                                              );
+                                            } else if (
+                                              quizStatus === "failed"
+                                            ) {
+                                              return (
+                                                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                              );
+                                            } else {
+                                              return (
+                                                <FileText className="h-4 w-4 text-primary" />
+                                              );
+                                            }
+                                          };
+
+                                          const getQuizStatusText = () => {
+                                            if (quizStatus === "passed") {
+                                              return "نجح";
+                                            } else if (
+                                              quizStatus ===
+                                              "max-attempts-reached"
+                                            ) {
+                                              return "انتهت المحاولات";
+                                            } else if (
+                                              quizStatus === "failed"
+                                            ) {
+                                              return "فشل";
+                                            } else {
+                                              return "لم يبدأ";
+                                            }
+                                          };
+
+                                          const getQuizButtonText = () => {
+                                            if (quizStatus === "passed") {
+                                              return "عرض النتائج";
+                                            } else if (
+                                              quizStatus ===
+                                              "max-attempts-reached"
+                                            ) {
+                                              return "عرض النتائج";
+                                            } else if (
+                                              quizStatus === "failed"
+                                            ) {
+                                              return "إعادة المحاولة";
+                                            } else {
+                                              return "بدء الاختبار";
+                                            }
+                                          };
+
+                                          return (
+                                            <div
+                                              key={quiz.id}
+                                              className="flex items-center justify-between p-3 bg-muted/20 rounded-lg"
+                                            >
+                                              <div className="flex items-center gap-3">
+                                                {getQuizStatusIcon()}
+                                                <div>
+                                                  <p className="font-medium text-sm">
+                                                    {quiz.title}
+                                                  </p>
+                                                  <p className="text-xs text-muted-foreground">
+                                                    {quiz.questions} سؤال •{" "}
+                                                    {quiz.duration} دقيقة
+                                                  </p>
+                                                  {latestAttempt && (
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                      <p className="text-xs text-muted-foreground">
+                                                        آخر محاولة:{" "}
+                                                        {latestAttempt.score}%
+                                                      </p>
+                                                      <Badge
+                                                        variant={
+                                                          latestAttempt.passed
+                                                            ? "default"
+                                                            : "destructive"
+                                                        }
+                                                        className="text-xs"
+                                                      >
+                                                        {getQuizStatusText()}
+                                                      </Badge>
+                                                    </div>
+                                                  )}
+                                                  {quizScenario &&
+                                                    quizScenario.attempts
+                                                      .length > 0 && (
+                                                      <p className="text-xs text-muted-foreground">
+                                                        {
+                                                          quizScenario.attempts
+                                                            .length
+                                                        }{" "}
+                                                        من{" "}
+                                                        {
+                                                          quizScenario.maxAttempts
+                                                        }{" "}
+                                                        محاولات
+                                                      </p>
+                                                    )}
+                                                </div>
+                                              </div>
+
+                                              <Button
+                                                size="sm"
+                                                className="lems-button-primary"
+                                                onClick={() => {
+                                                  if (
+                                                    quizStatus === "passed" ||
+                                                    quizStatus ===
+                                                      "max-attempts-reached"
+                                                  ) {
+                                                    navigate(
+                                                      `/quiz/${quiz.id}/results`
+                                                    );
+                                                  } else {
+                                                    navigate(
+                                                      `/quiz/${quiz.id}/take`
+                                                    );
+                                                  }
+                                                }}
+                                              >
+                                                {getQuizButtonText()}
+                                              </Button>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                           </div>
                         </Card>
                       ))}

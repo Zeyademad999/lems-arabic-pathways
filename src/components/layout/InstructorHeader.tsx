@@ -3,6 +3,8 @@ import { Menu, Bell, User, Search, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { NotificationsModal } from '@/components/notifications/NotificationsModal';
+import { getUnreadCount } from '@/lib/notificationsData';
 
 interface InstructorHeaderProps {
   onToggleSidebar: () => void;
@@ -13,6 +15,8 @@ export const InstructorHeader: React.FC<InstructorHeaderProps> = ({
   onToggleSidebar,
   sidebarOpen
 }) => {
+  const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
+  const unreadCount = getUnreadCount("instructor");
   return (
     <header className="h-header bg-card border-b border-border px-6 flex items-center justify-between sticky top-0 z-50">
       <div className="flex items-center gap-4">
@@ -43,11 +47,18 @@ export const InstructorHeader: React.FC<InstructorHeaderProps> = ({
           />
         </div>
 
-        <Button variant="ghost" size="sm" className="relative">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="relative"
+          onClick={() => setIsNotificationsOpen(true)}
+        >
           <Bell className="h-5 w-5" />
-          <Badge className="absolute -top-1 -left-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-            3
-          </Badge>
+          {unreadCount > 0 && (
+            <Badge className="absolute -top-1 -left-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </Badge>
+          )}
         </Button>
 
         <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-md">
@@ -61,6 +72,13 @@ export const InstructorHeader: React.FC<InstructorHeaderProps> = ({
           </Button>
         </Link>
       </div>
+
+      {/* Notifications Modal */}
+      <NotificationsModal
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        userRole="instructor"
+      />
     </header>
   );
 };

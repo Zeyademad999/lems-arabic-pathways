@@ -1,28 +1,28 @@
-import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { LEMSLayout } from '@/components/layout/LEMSLayout';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { VideoPlayer } from '@/components/course/VideoPlayer';
-import { ProgressionService } from '@/lib/progressionService';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  ArrowRight, 
-  ArrowLeft, 
-  Download, 
+import React from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { LEMSLayout } from "@/components/layout/LEMSLayout";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { VideoPlayer } from "@/components/course/VideoPlayer";
+import { ProgressionService } from "@/lib/progressionService";
+import { useToast } from "@/hooks/use-toast";
+import {
+  ArrowRight,
+  ArrowLeft,
+  Download,
   CheckCircle2,
   FileText,
   Clock,
   BookOpen,
   Play,
-  Pause
-} from 'lucide-react';
+  Pause,
+} from "lucide-react";
 
 interface Lesson {
   id: string;
   title: string;
   description: string;
-  type: 'video' | 'powerpoint' | 'pdf' | 'document';
+  type: "video" | "powerpoint" | "pdf" | "document";
   duration: number;
   completed: boolean;
   videoUrl?: string;
@@ -32,17 +32,18 @@ interface Lesson {
 
 // Mock lesson data
 const mockLesson: Lesson = {
-  id: '1',
-  title: 'ما هي اللوجستيات؟ - مقدمة شاملة',
-  description: 'في هذا الدرس سنتعرف على تعريف اللوجستيات وأهميتها في الاقتصاد الحديث. سنناقش التطور التاريخي لهذا المجال والدور المحوري الذي تلعبه اللوجستيات في نجاح الشركات والمؤسسات.',
-  type: 'video',
+  id: "1",
+  title: "ما هي اللوجستيات؟ - مقدمة شاملة",
+  description:
+    "في هذا الدرس سنتعرف على تعريف اللوجستيات وأهميتها في الاقتصاد الحديث. سنناقش التطور التاريخي لهذا المجال والدور المحوري الذي تلعبه اللوجستيات في نجاح الشركات والمؤسسات.",
+  type: "video",
   duration: 45,
   completed: false,
-  videoUrl: '/videos/intro-logistics.mp4',
+  videoUrl: "/videos/intro-logistics.mp4",
   attachments: [
-    'مقدمة-في-اللوجستيات-عرض-تقديمي.pdf',
-    'ملاحظات-الدرس.pdf',
-    'مراجع-إضافية.pdf'
+    "مقدمة-في-اللوجستيات-عرض-تقديمي.pdf",
+    "ملاحظات-الدرس.pdf",
+    "مراجع-إضافية.pdf",
   ],
   transcript: `مرحباً بكم في الدرس الأول من كورس أساسيات اللوجستيات.
 
@@ -61,7 +62,7 @@ const mockLesson: Lesson = {
 - زيادة رضا العملاء
 - تعزيز القدرة التنافسية
 
-سنتناول في الدروس القادمة كل عنصر من هذه العناصر بالتفصيل مع أمثلة عملية من الواقع.`
+سنتناول في الدروس القادمة كل عنصر من هذه العناصر بالتفصيل مع أمثلة عملية من الواقع.`,
 };
 
 const LessonView = () => {
@@ -85,7 +86,7 @@ const LessonView = () => {
 
   const handleVideoProgress = (currentTime: number, duration: number) => {
     setWatchTime(currentTime);
-    
+
     // Mark as completed when 80% watched
     if (currentTime / duration >= 0.8 && !lessonCompleted) {
       handleMarkComplete();
@@ -95,11 +96,11 @@ const LessonView = () => {
   const handleMarkComplete = () => {
     if (!lessonCompleted && courseId && lessonId) {
       setLessonCompleted(true);
-      
+
       // Get section ID from lesson ID (assuming lesson IDs map to sections)
       const sectionId = lessonId; // Simplified mapping
       ProgressionService.completeLesson(courseId, sectionId, lessonId);
-      
+
       toast({
         title: "تم إكمال الدرس!",
         description: "يمكنك الآن الانتقال إلى الدرس التالي",
@@ -109,7 +110,7 @@ const LessonView = () => {
 
   const handleDownloadAttachment = (filename: string) => {
     // In real app, trigger file download
-    console.log('Downloading:', filename);
+    console.log("Downloading:", filename);
   };
 
   return (
@@ -117,9 +118,13 @@ const LessonView = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/courses" className="hover:text-primary">الكورسات</Link>
+          <Link to="/courses" className="hover:text-primary">
+            الكورسات
+          </Link>
           <ArrowRight className="h-4 w-4" />
-          <Link to={`/courses/${courseId}`} className="hover:text-primary">أساسيات اللوجستيات</Link>
+          <Link to={`/courses/${courseId}`} className="hover:text-primary">
+            أساسيات اللوجستيات
+          </Link>
           <ArrowRight className="h-4 w-4" />
           <span>{lesson.title}</span>
         </div>
@@ -159,7 +164,7 @@ const LessonView = () => {
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
             {/* Video Player */}
-            {lesson.type === 'video' && lesson.videoUrl && (
+            {lesson.type === "video" && lesson.videoUrl && (
               <Card className="lems-card overflow-hidden">
                 <VideoPlayer
                   videoUrl={lesson.videoUrl}
@@ -176,7 +181,7 @@ const LessonView = () => {
                   <BookOpen className="h-5 w-5" />
                   محتوى الدرس
                 </h3>
-                
+
                 <div className="prose prose-Arabic max-w-none">
                   <p className="text-muted-foreground leading-relaxed">
                     {lesson.description}
@@ -192,9 +197,11 @@ const LessonView = () => {
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${(watchTime / (lesson.duration * 60)) * 100}%` }}
+                      style={{
+                        width: `${(watchTime / (lesson.duration * 60)) * 100}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -202,7 +209,7 @@ const LessonView = () => {
                 {/* Action Buttons */}
                 <div className="flex items-center gap-4">
                   {!lessonCompleted && (
-                    <Button 
+                    <Button
                       onClick={handleMarkComplete}
                       className="lems-button-primary"
                     >
@@ -210,13 +217,13 @@ const LessonView = () => {
                       تحديد كمكتمل
                     </Button>
                   )}
-                  
-                  <Button 
+
+                  <Button
                     variant="outline"
                     onClick={() => setShowTranscript(!showTranscript)}
                   >
                     <FileText className="h-4 w-4 ml-2" />
-                    {showTranscript ? 'إخفاء النص' : 'عرض النص'}
+                    {showTranscript ? "إخفاء النص" : "عرض النص"}
                   </Button>
                 </div>
               </div>
@@ -247,7 +254,7 @@ const LessonView = () => {
                     <Download className="h-4 w-4" />
                     المرفقات ({lesson.attachments.length})
                   </h4>
-                  
+
                   <div className="space-y-2">
                     {lesson.attachments.map((attachment, index) => (
                       <Button
@@ -275,18 +282,18 @@ const LessonView = () => {
             <Card className="lems-card">
               <div className="space-y-4">
                 <h4 className="font-semibold">التنقل</h4>
-                
+
                 <div className="space-y-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
                     onClick={() => window.history.back()}
                   >
                     <ArrowRight className="h-4 w-4 ml-2" />
                     الدرس السابق
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     className="w-full justify-start lems-button-primary"
                     disabled={!lessonCompleted}
                   >
@@ -296,10 +303,10 @@ const LessonView = () => {
                 </div>
 
                 <div className="pt-3 border-t border-border">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full"
-                    onClick={() => navigate(`/courses/${courseId}`)}
+                    onClick={() => navigate(`/student/courses/${courseId}`)}
                   >
                     العودة للكورس
                   </Button>
@@ -311,15 +318,15 @@ const LessonView = () => {
             <Card className="lems-card">
               <div className="space-y-3">
                 <h4 className="font-semibold">التقدم</h4>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span>هذا الدرس</span>
-                    <span className={lessonCompleted ? 'text-success' : ''}>
-                      {lessonCompleted ? 'مكتمل' : 'قيد التقدم'}
+                    <span className={lessonCompleted ? "text-success" : ""}>
+                      {lessonCompleted ? "مكتمل" : "قيد التقدم"}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     {lessonCompleted ? (
                       <CheckCircle2 className="h-4 w-4 text-success" />

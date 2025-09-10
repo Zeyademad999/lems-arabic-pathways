@@ -1,57 +1,21 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LEMSLayout } from "@/components/layout/LEMSLayout";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { StudentDashboard } from "@/components/dashboard/StudentDashboard";
-import { InstructorDashboard } from "@/components/dashboard/InstructorDashboard";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [user, setUser] = React.useState<{
-    role: 'student' | 'instructor' | 'admin';
-    isAuthenticated: boolean;
-  } | null>(null);
 
-  const handleLogin = (userRole: 'student' | 'instructor' | 'admin') => {
-    setUser({
-      role: userRole,
-      isAuthenticated: true
-    });
-    
-    // Redirect instructor to instructor portal
-    if (userRole === 'instructor') {
-      navigate('/instructor');
+  const handleLogin = (userRole: "student" | "instructor" | "admin") => {
+    // Redirect to appropriate portal
+    if (userRole === "instructor") {
+      navigate("/instructor");
+    } else if (userRole === "student") {
+      navigate("/student");
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-  };
-
-  // Show login form if not authenticated
-  if (!user?.isAuthenticated) {
-    return <LoginForm onLogin={handleLogin} />;
-  }
-
-  // Render appropriate dashboard based on user role
-  const renderDashboard = () => {
-    switch (user.role) {
-      case 'student':
-        return <StudentDashboard />;
-      case 'instructor':
-        return <InstructorDashboard />;
-      case 'admin':
-        return <InstructorDashboard />; // Admin uses similar interface for now
-      default:
-        return <StudentDashboard />;
-    }
-  };
-
-  return (
-    <LEMSLayout userRole={user.role}>
-      {renderDashboard()}
-    </LEMSLayout>
-  );
+  // Always show login form - redirects happen after login
+  return <LoginForm onLogin={handleLogin} />;
 };
 
 export default Index;
